@@ -1,0 +1,41 @@
+timestamp,event,email,status,message
+2026-09-17T20:38:38,SYSTEM_INIT,,INFO,"Local CSV storage initialized successfully (buyers.csv, sent_log.csv, activity_log.csv)."
+2026-09-17T20:38:38,BUYER_ADDED,john@example.com,SUCCESS,Added John Smith (ABC Imports)
+2026-09-17T20:38:38,BUYER_ADDED,jane@example.com,SUCCESS,Added Jane Doe (XYZ Trading)
+2026-09-17T20:38:38,EMAIL_VALIDATION,invalid-email,REJECTED,Invalid email syntax: 'invalid-email'
+2026-09-17T20:38:38,DUPLICATE_CHECK,john@example.com,SKIPPED,Duplicate buyer detected. Email 'john@example.com' is already in buyers.csv.
+2026-09-17T20:38:38,OUTREACH_CHECK,sarah@wellness-singingbowls.com,SKIPPED,Email 'sarah@wellness-singingbowls.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-17T20:39:55,SYSTEM_INIT,,INFO,"Local CSV storage initialized successfully (buyers.csv, sent_log.csv, activity_log.csv)."
+2026-09-17T20:39:55,DUPLICATE_CHECK,john@example.com,SKIPPED,Duplicate buyer detected. Email 'john@example.com' is already in buyers.csv.
+2026-09-17T20:39:55,DUPLICATE_CHECK,jane@example.com,SKIPPED,Duplicate buyer detected. Email 'jane@example.com' is already in buyers.csv.
+2026-09-17T20:39:55,EMAIL_VALIDATION,invalid-email,REJECTED,Invalid email syntax: 'invalid-email'
+2026-09-17T20:39:55,DUPLICATE_CHECK,john@example.com,SKIPPED,Duplicate buyer detected. Email 'john@example.com' is already in buyers.csv.
+2026-09-17T20:39:55,OUTREACH_CHECK,sarah@wellness-singingbowls.com,SKIPPED,Email 'sarah@wellness-singingbowls.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-18T19:29:23,SYSTEM_INIT,,INFO,"Initialized CSV databases (buyers, sent_log, activity_log, business/individual CSVs)."
+2026-09-18T19:29:23,BUYER_CATALOGED,contact@soundsanctuary.com,SUCCESS,Saved to master catalog: Maya Lin (Sound Sanctuary Studio)
+2026-09-18T19:29:23,AI_CLASSIFICATION,contact@soundsanctuary.com,BUSINESS,[Heuristic] Strong commercial indicators in company name ('Sound Sanctuary Studio') with terms: studio. (confidence: 0.95)
+2026-09-18T19:29:23,BUYER_CATALOGED,purchasing@himalayan-sound.de,SUCCESS,Saved to master catalog: Klaus Weber (Himalayan Art & Sound GmbH)
+2026-09-18T19:29:23,AI_CLASSIFICATION,purchasing@himalayan-sound.de,BUSINESS,[Heuristic] Strong commercial indicators in company name ('Himalayan Art & Sound GmbH') with terms: gmbh. (confidence: 0.95)
+2026-09-18T19:29:23,BUYER_CATALOGED,orders@dharmameditation.co.uk,SUCCESS,Saved to master catalog: Liam Gallagher (Dharma Meditation Wholesalers)
+2026-09-18T19:29:23,AI_CLASSIFICATION,orders@dharmameditation.co.uk,BUSINESS,"[Heuristic] Strong commercial indicators in company name ('Dharma Meditation Wholesalers') with terms: meditation, wholesaler, wholesalers. (confidence: 0.95)"
+2026-09-18T19:29:23,BUYER_CATALOGED,procurement@zenithspa.ca,SUCCESS,Saved to master catalog: Chloe Tremblay (Zenith Wellness & Spa Supplies)
+2026-09-18T19:29:23,AI_CLASSIFICATION,procurement@zenithspa.ca,BUSINESS,"[Heuristic] Strong commercial indicators in company name ('Zenith Wellness & Spa Supplies') with terms: supplies, spa, wellness. (confidence: 0.95)"
+2026-09-18T19:29:23,BUYER_CATALOGED,michael.vance88@gmail.com,SUCCESS,Saved to master catalog: Michael Vance ()
+2026-09-18T19:29:23,AI_CLASSIFICATION,michael.vance88@gmail.com,INDIVIDUAL,[Heuristic] Personal consumer profile: no commercial entity listed; uses consumer email service (@gmail.com). (confidence: 0.85)
+2026-09-18T19:29:23,BUYER_CATALOGED,elena_yoga@yahoo.com,SUCCESS,Saved to master catalog: Elena Rostova ()
+2026-09-18T19:29:23,AI_CLASSIFICATION,elena_yoga@yahoo.com,INDIVIDUAL,[Heuristic] Personal consumer profile: no commercial entity listed; uses consumer email service (@yahoo.com). (confidence: 0.85)
+2026-09-18T19:29:24,BUYER_CATALOGED,ananya@lotussound.in,SUCCESS,Saved to master catalog: Ananya Sharma (Lotus Sound Healing Importers)
+2026-09-18T19:29:24,AI_CLASSIFICATION,ananya@lotussound.in,BUSINESS,"[Heuristic] Strong commercial indicators in company name ('Lotus Sound Healing Importers') with terms: sound healing, import, importer. (confidence: 0.95)"
+2026-09-18T19:29:24,BUYER_CATALOGED,sales@apexmeditation.com,SUCCESS,Saved to master catalog: David Miller (Apex Meditation Gear)
+2026-09-18T19:29:24,AI_CLASSIFICATION,sales@apexmeditation.com,BUSINESS,"[Heuristic] Strong commercial indicators in company name ('Apex Meditation Gear') with terms: meditation, gear. (confidence: 0.95)"
+2026-09-18T19:29:24,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'
+2026-09-18T19:29:56,SYSTEM_INIT,,INFO,"Initialized CSV databases (buyers, sent_log, activity_log, business/individual CSVs)."
+2026-09-18T19:29:56,DUPLICATE_CHECK,contact@soundsanctuary.com,SKIPPED,Duplicate lead 'contact@soundsanctuary.com' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,purchasing@himalayan-sound.de,SKIPPED,Duplicate lead 'purchasing@himalayan-sound.de' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,orders@dharmameditation.co.uk,SKIPPED,Duplicate lead 'orders@dharmameditation.co.uk' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,procurement@zenithspa.ca,SKIPPED,Duplicate lead 'procurement@zenithspa.ca' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,michael.vance88@gmail.com,SKIPPED,Duplicate lead 'michael.vance88@gmail.com' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,elena_yoga@yahoo.com,SKIPPED,Duplicate lead 'elena_yoga@yahoo.com' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,ananya@lotussound.in,SKIPPED,Duplicate lead 'ananya@lotussound.in' already cataloged in buyers.csv.
+2026-09-18T19:29:56,DUPLICATE_CHECK,sales@apexmeditation.com,SKIPPED,Duplicate lead 'sales@apexmeditation.com' already cataloged in buyers.csv.
+2026-09-18T19:29:56,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'

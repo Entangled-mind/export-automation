@@ -1,0 +1,3 @@
+buyer_name,company_name,email,website,country,source_platform,classification,reasoning
+Michael Vance,,michael.vance88@gmail.com,,USA,Sound Healing Forum,INDIVIDUAL,[Heuristic] Personal consumer profile: no commercial entity listed; uses consumer email service (@gmail.com).
+Elena Rostova,,elena_yoga@yahoo.com,https://elenarostova.blog,Germany,Yoga Community,INDIVIDUAL,[Heuristic] Personal consumer profile: no commercial entity listed; uses consumer email service (@yahoo.com).
