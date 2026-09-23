@@ -30,6 +30,9 @@ KNOWN_PLACEHOLDERS = {
     "invalid-email",
     "sample@sample",
     "email@example.com",
+    "abc",
+    "abc@",
+    "@gmail.com",
 }
 
 
@@ -38,7 +41,7 @@ def is_valid_email(email: Optional[str]) -> bool:
 
     Checks performed:
     1. Email exists and is a string.
-    2. Email does not contain any spaces or control characters.
+    2. Leading/trailing whitespace trimmed; no internal whitespace characters.
     3. Email contains exactly one '@' separator.
     4. Local part (before '@') and domain part (after '@') are non-empty.
     5. Domain contains at least one dot separating subdomains/TLD with valid characters.
@@ -53,11 +56,13 @@ def is_valid_email(email: Optional[str]) -> bool:
     if not email or not isinstance(email, str):
         return False
 
-    # Check for whitespace anywhere inside the string
-    if any(ch.isspace() for ch in email):
+    cleaned = email.strip().lower()
+    if not cleaned:
         return False
 
-    cleaned = email.strip().lower()
+    # Check for whitespace anywhere inside the cleaned string
+    if any(ch.isspace() for ch in cleaned):
+        return False
 
     # Reject known obvious placeholders
     if cleaned in KNOWN_PLACEHOLDERS:

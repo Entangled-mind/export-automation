@@ -339,22 +339,59 @@
     </div>
 
     <!-- Modal: Add New Buyer -->
+        <!-- Modal: Add New Buyer -->
     <div id="add-modal" class="modal-overlay">
-        <div class="modal">
+        <div class="modal" style="max-width: 620px;">
             <div class="modal-header">
                 <h3 class="modal-title">➕ Add New Buyer Lead</h3>
                 <button class="close-btn" onclick="closeAddModal()">&times;</button>
             </div>
-            <p style="font-size: 12px; color: var(--text-secondary);">Test on camera: automatic normalization, email validation, duplicate detection, and AI categorization!</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <input type="text" id="m-buyer-name" class="input-field" placeholder="Buyer Name (e.g. Sandra Bullock)">
-                <input type="text" id="m-company-name" class="input-field" placeholder="Company Name (e.g. Alpine Sound Healing Studio)">
-                <input type="email" id="m-email" class="input-field" placeholder="Email Address (e.g. info@alpinesound.ch)">
-                <input type="text" id="m-website" class="input-field" placeholder="Website URL (e.g. https://alpinesound.ch)">
-                <input type="text" id="m-country" class="input-field" placeholder="Country (e.g. Switzerland)">
-                <input type="text" id="m-source" class="input-field" placeholder="Source Platform (e.g. Swiss Wellness Directory)">
+            
+            <!-- Quick Fill Demo Buttons (Ideal for Video Recording) -->
+            <div style="background: #111728; border: 1px dashed var(--accent-primary); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.5px;">⚡ One-Click Video Demo Presets</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="quickFillB2B()">🏢 Preset: B2B Wholesale Lead</button>
+                    <button type="button" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="quickFillB2C()">🧘 Preset: B2C Individual Lead</button>
+                </div>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Buyer Name *</label>
+                    <input type="text" id="m-buyer-name" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. Marcus Vance">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Company / Studio Name</label>
+                    <input type="text" id="m-company-name" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. Alpine Sound Healing Studio GmbH">
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Email Address *</label>
+                    <span id="m-email-feedback" style="font-size: 11px; font-weight: 600;"></span>
+                </div>
+                <input type="email" id="m-email" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. wholesale@alpinesound.de" oninput="validateModalEmailLive()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Website URL</label>
+                    <input type="text" id="m-website" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. https://alpinesound.de">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Country</label>
+                    <input type="text" id="m-country" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. Germany">
+                </div>
+            </div>
+
+            <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Discovery Source Platform</label>
+                <input type="text" id="m-source" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. European Wellness Directory">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
                 <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="submitNewBuyer()">Save & Classify Lead</button>
             </div>
@@ -658,16 +695,63 @@
                 stepperStatus.innerText = "Status: Error";
             }
         }
+        function quickFillB2B() {
+            const randId = Math.floor(Math.random() * 900) + 100;
+            document.getElementById("m-buyer-name").value = "Marcus Vance";
+            document.getElementById("m-company-name").value = "Alpine Sound Healing Studio GmbH";
+            document.getElementById("m-email").value = "wholesale" + randId + "@alpinesound.de";
+            document.getElementById("m-website").value = "https://alpinesound.de";
+            document.getElementById("m-country").value = "Germany";
+            document.getElementById("m-source").value = "European Wellness Directory";
+            validateModalEmailLive();
+            showNotification("🏢 Populated B2B Wholesale Preset (Ready to Save!)");
+        }
+
+        function quickFillB2C() {
+            const randId = Math.floor(Math.random() * 900) + 100;
+            document.getElementById("m-buyer-name").value = "Emily Watson";
+            document.getElementById("m-company-name").value = "";
+            document.getElementById("m-email").value = "emily.watson" + randId + "@gmail.com";
+            document.getElementById("m-website").value = "";
+            document.getElementById("m-country").value = "USA";
+            document.getElementById("m-source").value = "Sound Meditation Community";
+            validateModalEmailLive();
+            showNotification("🧘 Populated B2C Individual Preset (Ready to Save!)");
+        }
+
+        function validateModalEmailLive() {
+            const email = (document.getElementById("m-email").value || "").trim();
+            const fb = document.getElementById("m-email-feedback");
+            if (!email) {
+                fb.innerHTML = "";
+                return;
+            }
+            const re = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
+            if (re.test(email)) {
+                fb.innerHTML = "<span style='color: #34d399;'>🟢 Valid Email Format</span>";
+            } else {
+                fb.innerHTML = "<span style='color: #f87171;'>🔴 Need valid format (user@domain.com)</span>";
+            }
+        }
 
         async function submitNewBuyer() {
             const payload = {
-                buyer_name: document.getElementById("m-buyer-name").value,
-                company_name: document.getElementById("m-company-name").value,
-                email: document.getElementById("m-email").value,
-                website: document.getElementById("m-website").value,
-                country: document.getElementById("m-country").value,
-                source_platform: document.getElementById("m-source").value || "Manual Entry",
+                buyer_name: (document.getElementById("m-buyer-name").value || "").trim(),
+                company_name: (document.getElementById("m-company-name").value || "").trim(),
+                email: (document.getElementById("m-email").value || "").trim(),
+                website: (document.getElementById("m-website").value || "").trim(),
+                country: (document.getElementById("m-country").value || "").trim(),
+                source_platform: (document.getElementById("m-source").value || "").trim() || "Manual Entry",
             };
+
+            if (!payload.buyer_name) {
+                showNotification("⚠️ Please enter a buyer name.");
+                return;
+            }
+            if (!payload.email) {
+                showNotification("⚠️ Please enter an email address.");
+                return;
+            }
 
             const res = await fetch("/api/add-buyer", {
                 method: "POST",
