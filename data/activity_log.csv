@@ -86,3 +86,4 @@ timestamp,event,email,status,message
 2026-09-23T18:38:34,OUTREACH_CHECK,sales@apexmeditation.com,SKIPPED,Email 'sales@apexmeditation.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
 2026-09-23T18:38:34,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'
 2026-09-23T18:51:50,MANUAL_LEAD_ADDED,wholesale@alpinesound.de,BUSINESS,"Added Marcus Vance (Alpine Sound Healing Studio GmbH) - [Heuristic] Strong commercial indicators in company name ('Alpine Sound Healing Studio GmbH') with terms: studio, sound healing, gmbh."
+2026-09-24T18:11:44,OUTREACH_DISPATCH,wholesale@alpinesound.de,SUCCESS,Dispatched wholesale proposal & PDF catalog to Alpine Sound Healing Studio GmbH.
