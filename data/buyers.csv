@@ -1,21 +1,20 @@
 buyer_name,company_name,email,website,country,source_platform
-John Smith,ABC Imports,john@example.com,https://example.com,USA,Google
-Jane Doe,XYZ Trading,jane@example.com,https://xyz.com,UK,Directory
-Sarah Connor,Skynet Wellness Inc,sarah@wellness-singingbowls.com,https://wellness-singingbowls.com,Australia,Directory
-Maya Lin,Sound Sanctuary Studio,contact@soundsanctuary.com,https://www.soundsanctuary.com,USA,Google Directory
-Klaus Weber,Himalayan Art & Sound GmbH,purchasing@himalayan-sound.de,https://www.himalayan-sound.de,Germany,EU Business Directory
-Liam Gallagher,Dharma Meditation Wholesalers,orders@dharmameditation.co.uk,https://www.dharmameditation.co.uk,UK,Wholesale Trade Portal
-Chloe Tremblay,Zenith Wellness & Spa Supplies,procurement@zenithspa.ca,https://zenithspa.ca,Canada,Spa Directory
-Michael Vance,,michael.vance88@gmail.com,,USA,Sound Healing Forum
-Elena Rostova,,elena_yoga@yahoo.com,https://elenarostova.blog,Germany,Yoga Community
-Ananya Sharma,Lotus Sound Healing Importers,ananya@lotussound.in,https://lotussound.in,India,Google Search
-David Miller,Apex Meditation Gear,sales@apexmeditation.com,https://apexmeditation.com,Australia,Web Search
-Marcus Vance,Alpine Sound Healing Studio GmbH,wholesale@alpinesound.de,https://alpinesound.de,Germany,European Wellness Directory
-Heinrich Bauer,Tibetan Harmony Wholesalers,orders@tibetan-harmony.de,https://www.tibetan-harmony.de,Germany,Directory
-,Zenith Sound & Wellness Spa,info@zenithspa.ca,https://www.zenithspa.ca/contact,Canada,Website Search
-,Sound Meditation Enthusiast,sarah.meditation@gmail.com,https://www.soundhobbyist.org/about,UK,Website Search
-Test Importer,Singing Bowl Importers LLC,lead_1790264107@singingbowltest.org,,USA,
-Test Importer,Singing Bowl Importers LLC,lead_1790264391@singingbowltest.org,,USA,
-Test Importer,Singing Bowl Importers LLC,lead_1790264704@singingbowltest.org,,USA,
-Test Importer,Singing Bowl Importers LLC,lead_1790264840@singingbowltest.org,,USA,
-Test Importer,Singing Bowl Importers LLC,lead_1790264913@singingbowltest.org,,USA,
+Elena Rostova,Bodhichitta Sound Imports LLC,procurement@bodhichittasound.com,https://bodhichittasound.com,USA,Global Trade Directory
+Klaus Weber,Klangschalen Zentrum München GmbH,einkauf@klangschalen-muenchen.de,https://klangschalen-muenchen.de,Germany,European Wellness Registry
+Liam Gallagher,Dharma Meditation Wholesalers Ltd.,orders@dharmameditation.co.uk,https://dharmameditation.co.uk,UK,Wholesale Trade Portal
+Stefan Brandt,Himalaya Kunst & Handwerk Importe e.K.,s.brandt@himalayakunst-berlin.de,https://himalayakunst-berlin.de,Germany,Hamburg Port Trade Registry
+Gareth Thomas,Sydney Sound Temple & Healing Academy,gareth@sydneysoundtemple.com.au,https://sydneysoundtemple.com.au,Australia,Asia-Pacific Trade Hub
+Alex Tremblay,Nordic Acoustic & Wellness Supplies Inc.,alex@nordicacoustic.ca,https://nordicacoustic.ca,Canada,Canadian Holistic Network
+Camille Dubois,L'Art du Bol Chantant SAS,c.dubois@bolschantants-paris.fr,https://bolschantants-paris.fr,France,French Artisan Import Network
+Kenji Takahashi,Tokyo Zen & Acoustic Craft Corp.,takahashi@tokyo-zen-acoustic.jp,https://tokyo-zen-acoustic.jp,Japan,Japan Trade Organization
+Maya Lin,Sound Sanctuary Healing Studio,contact@soundsanctuary.com,https://soundsanctuary.com,USA,Google Directory
+Chloe Bennett,Zenith Sound & Wellness Spa,procurement@zenithspa.ca,https://zenithspa.ca,Canada,North American Spa Guild
+Dr. Anja Richter,Harmonie & Klang Therapie Institut,kontakt@harmonie-klang.at,https://harmonie-klang.at,Austria,European Medical Spa Registry
+Nathan O'Connor,AuraSonic Holistic Retreats Pty,nathan@aurasonic.com.au,https://aurasonic.com.au,Australia,Australian Holistic Alliance
+Jessica Wong,Pacific Sound & Thermal Spa,jwong@pacificsoundtherapy.ca,https://pacificsoundtherapy.ca,Canada,Canadian Spa Network
+Ananya Roy,Lotus Sound & Yoga Sanctuary,ananya@lotussound.in,https://lotussound.in,India,Rishikesh Yoga Alliance
+David K. Miller,Sedona Sacred Sound Lounge LLC,dmiller@sedonasoundlounge.com,https://sedonasoundlounge.com,USA,Sedona Chamber of Commerce
+Michael Vance,Vance Mindful Sound Practice,michael.vance88@gmail.com,https://michaelvance-yoga.com,USA,Independent Yoga Community
+Sarah Jenkins,Sarah Jenkins Sound Journey,sarah.jenkins.wellness@gmail.com,https://sarahjenkinswellness.co.uk,UK,Holistic Practitioner Network
+Marco Rossi,Spazio Silenzio Meditazione,m.rossi_meditazione@libero.it,https://spaziosilenzio.it,Italy,Italian Mindfulness Network
+Test Importer,Singing Bowl Importers LLC,lead_1790267759@singingbowltest.org,,USA,

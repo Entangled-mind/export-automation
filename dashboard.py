@@ -149,36 +149,9 @@ def get_dashboard_stats() -> Dict[str, Any]:
 
 
 def reset_demo_environment() -> None:
-    """Reset and re-seed the test databases so presenter can re-record clean demos."""
-    # Remove CSV files
-    for p in [config.BUYERS_CSV, config.BUSINESS_BUYERS_CSV, config.INDIVIDUAL_BUYERS_CSV, config.SENT_LOG_CSV, config.ACTIVITY_LOG_CSV]:
-        if p.exists():
-            p.unlink()
-
-    # Re-initialize clean CSVs
-    init_buyers_csv()
-    init_classified_csv(config.BUSINESS_BUYERS_CSV)
-    init_classified_csv(config.INDIVIDUAL_BUYERS_CSV)
-    init_sent_log()
-    init_activity_log()
-
-    # Re-initialize clean SQLite DB
-    if config.DB_PATH.exists():
-        try:
-            config.DB_PATH.unlink()
-        except Exception:
-            pass
-
-    init_database()
-
-    # Seed baseline prior outreach
-    log_sent_entry("sarah@wellness-singingbowls.com", "SUCCESS")
-    log_activity(
-        event="SYSTEM_RESET",
-        email="",
-        status="INFO",
-        message="Demo data reset to clean baseline state for video recording.",
-    )
+    """Reset and re-seed the databases with authentic international B2B buyer leads."""
+    from seed_real_world_data import seed_database_and_csvs
+    seed_database_and_csvs()
 
 
 class DashboardRequestHandler(BaseHTTPRequestHandler):
