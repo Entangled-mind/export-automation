@@ -81,6 +81,6 @@ USE_SSL = os.getenv("USE_SSL", "True").lower() in ("true", "1", "yes")
 DRY_RUN = os.getenv("DRY_RUN", "True").lower() in ("true", "1", "yes")
 
 # Sender Branding & Signature Defaults
-SENDER_NAME = os.getenv("SENDER_NAME", "Himalayan Export & Artisan Guild")
-SENDER_COMPANY = os.getenv("SENDER_COMPANY", "Himalayan Artisan Singing Bowls Ltd.")
-SENDER_CONTACT = os.getenv("SENDER_CONTACT", "+977-1-4412345 | export@himalayanartisanbowls.com")
+SENDER_NAME = os.getenv("SENDER_NAME", "Priyanshu Sharma (Founder & Head of Exports)")
+SENDER_COMPANY = os.getenv("SENDER_COMPANY", "ResonaCraft Artisans Ltd.")
+SENDER_CONTACT = os.getenv("SENDER_CONTACT", "+977-1-4412345 / +91-98765-43210 | export@resonacraft.com")
