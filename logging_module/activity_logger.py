@@ -62,6 +62,14 @@ def log_sent_entry(
         writer = csv.DictWriter(f, fieldnames=SENT_LOG_FIELDS)
         writer.writerow(entry)
 
+    # Synchronize with SQLite database in default mode
+    if csv_path is None:
+        try:
+            from database.repository import record_outreach
+            record_outreach(email=cleaned_email, status=status.strip().upper())
+        except Exception:
+            pass
+
 
 def read_sent_history(csv_path: Optional[Path] = None) -> List[Dict[str, str]]:
     """Read all entries from sent_log.csv.
@@ -159,6 +167,19 @@ def log_activity(
     with open(path, mode="a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=ACTIVITY_LOG_FIELDS)
         writer.writerow(row)
+
+    # Synchronize with SQLite database in default mode
+    if csv_path is None:
+        try:
+            from database.repository import record_activity
+            record_activity(
+                event=event.strip().upper(),
+                email=cleaned_email,
+                status=status.strip().upper(),
+                message=message.strip(),
+            )
+        except Exception:
+            pass
 
     if print_console:
         email_display = f"[{cleaned_email}] " if cleaned_email else ""

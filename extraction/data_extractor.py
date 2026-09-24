@@ -202,6 +202,14 @@ def add_buyer(
         writer = csv.DictWriter(f, fieldnames=BUYER_FIELDS)
         writer.writerow(normalized)
 
+    # Synchronize with SQLite database in default mode
+    if csv_path is None:
+        try:
+            from database.repository import upsert_buyer
+            upsert_buyer(normalized)
+        except Exception:
+            pass
+
     return True, f"Buyer '{normalized['buyer_name']}' ({email}) added successfully"
 
 
@@ -318,6 +326,24 @@ def add_classified_buyer(
     with open(target_path, mode="a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CLASSIFIED_FIELDS, extrasaction="ignore")
         writer.writerow(record)
+
+    # Synchronize with SQLite database in default mode
+    if custom_path is None:
+        try:
+            from database.repository import save_classification
+            score_val = int(intent_score) if intent_score else 0
+            save_classification(
+                email=email,
+                category=category,
+                tier=tier,
+                intent_score=score_val,
+                confidence=0.90,
+                outreach_angle=outreach_angle,
+                reasoning=reasoning,
+                source="Pipeline",
+            )
+        except Exception:
+            pass
 
     return True, f"Saved '{email}' to {target_path.name}"
 

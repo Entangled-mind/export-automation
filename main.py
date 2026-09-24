@@ -1,26 +1,27 @@
-"""Main entry point for EXPORT Automation System (Phase 4: Outreach & Email Automation).
+"""Main entry point for EXPORT Automation System (Phase 5: Enterprise SQLite Database).
 
-Orchestrates the complete 4-stage export automation pipeline:
-1. Lead Discovery (search/ package: Google Search, B2B Directories, Website Crawling)
-2. Data Extraction & Normalization
-3. Email Syntax Validation & Data Quality Checks (VALID, INCOMPLETE, INVALID_EMAIL, DUPLICATE, REJECTED)
-4. Duplicate Prevention & Master Cataloging (data/buyers.csv)
-5. AI Lead Classification & Priority Tiering (classification/ package: Gemini AI / Mock AI)
+Orchestrates the complete 5-stage export automation pipeline:
+1. Enterprise SQLite Database Initialization & Automated CSV Migration (database/ package)
+2. Lead Discovery (search/ package: Google Search, B2B Directories, Website Crawling)
+3. Data Extraction & Normalization
+4. Email Syntax Validation & Data Quality Checks (VALID, INCOMPLETE, INVALID_EMAIL, DUPLICATE, REJECTED)
+5. Duplicate Prevention & Relational Cataloging (SQLite buyers table & data/buyers.csv)
+6. AI Lead Classification & Priority Tiering (classification/ package: Gemini AI / Mock AI)
    - Evaluates buyer fit for Himalayan Singing Bowls export products
    - Assigns Priority Tiers (Tier 1 High, Tier 2 Medium, Tier 3 Low, Irrelevant)
    - Computes Intent Score (0 - 100) & recommends tailored outreach angle
-6. Segregated Storage Management (data/business_buyers.csv vs data/individual_buyers.csv)
-7. Automated Outreach & Email Automation (outreach/ package: Gmail SMTP / Safe Simulation)
+7. Relational Persistence & Segregated Storage (SQLite classifications table & CSV mirrors)
+8. Automated Outreach & Email Automation (outreach/ package: Gmail SMTP / Safe Simulation)
    - Composes personalized Plain Text and HTML MIME emails with dynamic placeholders
    - Attaches official B2B Export Catalog Presentation PDF (assets/company_presentation.pdf)
    - Enforces duplicate outreach screening and daily sending quotas
    - Operates in safe dry-run simulation mode when TEST_MODE=True
-8. Audit Logging & Real-time Executive Reporting
+9. Audit Logging & Real-time Executive Database Reporting
 """
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 # Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -39,6 +40,15 @@ from classification import (
     ClassificationStatistics,
     LeadClassification,
     classify_lead,
+)
+from database import (
+    get_database_stats,
+    init_database,
+    migrate_csv_to_sqlite,
+    record_activity,
+    record_outreach,
+    save_classification,
+    upsert_buyer,
 )
 from extraction.data_extractor import (
     add_buyer,
@@ -71,35 +81,50 @@ from validation.data_quality import (
 )
 
 
-def run_pipeline() -> Tuple[DiscoveryStatistics, ClassificationStatistics, OutreachStatistics]:
-    """Execute the Phase 4 End-to-End Export Automation Pipeline.
+def run_pipeline() -> Tuple[DiscoveryStatistics, ClassificationStatistics, OutreachStatistics, Dict[str, Any]]:
+    """Execute the Phase 5 End-to-End Export Automation Pipeline.
 
     Returns:
-        Tuple of (DiscoveryStatistics, ClassificationStatistics, OutreachStatistics).
+        Tuple of (DiscoveryStatistics, ClassificationStatistics, OutreachStatistics, DatabaseStatsDict).
     """
     disc_stats = DiscoveryStatistics()
     class_stats = ClassificationStatistics()
 
-    print("=" * 70)
-    print("EXPORT AUTOMATION SYSTEM -- PHASE 4 (OUTREACH & EMAIL AUTOMATION)")
+    print("=" * 72)
+    print("EXPORT AUTOMATION SYSTEM -- PHASE 5 (ENTERPRISE SQLITE DATABASE)")
     print(f"Target Product : {config.SEARCH_KEYWORD}")
     print(f"Execution Mode : {'TEST_MODE (Simulation Dry-Run)' if config.TEST_MODE else 'LIVE GMAIL SMTP'}")
     print(f"Gemini Model   : {config.GEMINI_MODEL}")
     print(f"Daily Limit    : {config.DAILY_SEND_LIMIT} emails/day")
+    print(f"SQLite DB Path : {config.DB_PATH.name}")
     print(f"PDF Catalog    : {config.PRESENTATION_PATH.name} ({'Found' if config.PRESENTATION_PATH.exists() else 'Missing'})")
     print(f"Data Directory : {config.DATA_DIR}")
-    print("=" * 70)
+    print("=" * 72)
 
-    # Initialize CSV storage files
+    # --------------------------------------------------------------------------
+    # STEP 0: DATABASE INITIALIZATION & CSV MIGRATION
+    # --------------------------------------------------------------------------
+    init_database()
     init_buyers_csv()
     init_sent_log()
     init_activity_log()
+
+    # Automatically ensure historical CSV data is migrated to SQLite
+    migration_counts = migrate_csv_to_sqlite()
+    if any(count > 0 for count in migration_counts.values()):
+        log_activity(
+            event="DATABASE_MIGRATION",
+            email="",
+            status="SUCCESS",
+            message=f"Migrated records to SQLite: {migration_counts}",
+            print_console=False,
+        )
 
     log_activity(
         event="PIPELINE_INIT",
         email="",
         status="INFO",
-        message=f"Initialized Phase 4 pipeline. TEST_MODE={config.TEST_MODE}.",
+        message=f"Initialized Phase 5 pipeline. TEST_MODE={config.TEST_MODE}.",
     )
 
     # --------------------------------------------------------------------------
@@ -259,22 +284,22 @@ def run_pipeline() -> Tuple[DiscoveryStatistics, ClassificationStatistics, Outre
     print()
     disc_stats.print_summary()
 
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 72)
     print("PHASE 3: AI LEAD CLASSIFICATION & TIER REPORT")
-    print("=" * 70)
+    print("=" * 72)
     print(f"Total Leads Evaluated        : {class_stats.total_evaluated}")
     print(f"B2B Wholesale / Studios      : {class_stats.business_count}")
     print(f"B2C Solo / Personal Buyers   : {class_stats.individual_count}")
     print(f"Irrelevant / Unqualified     : {class_stats.irrelevant_count}")
-    print("-" * 70)
+    print("-" * 72)
     print(f"Tier 1 (High Priority Bulk)  : {class_stats.tier_1_count}")
     print(f"Tier 2 (Medium Priority)     : {class_stats.tier_2_count}")
     print(f"Tier 3 (Low Priority Solo)   : {class_stats.tier_3_count}")
-    print("=" * 70)
+    print("=" * 72)
 
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 72)
     print("PHASE 4: OUTREACH & EMAIL AUTOMATION REPORT")
-    print("=" * 70)
+    print("=" * 72)
     print(f"Targeted Qualified Leads     : {outreach_stats.total_targeted}")
     print(f"Dispatched via Live SMTP     : {outreach_stats.sent_count}")
     print(f"Simulated Dispatches (Dry-Run): {outreach_stats.simulated_count}")
@@ -283,9 +308,29 @@ def run_pipeline() -> Tuple[DiscoveryStatistics, ClassificationStatistics, Outre
     print(f"Rejected: Invalid Syntax     : {outreach_stats.rejected_count}")
     print(f"Failed Transmission Errors   : {outreach_stats.failed_count}")
     print(f"Catalog Presentation Attached: {'assets/company_presentation.pdf (Active)' if config.PRESENTATION_PATH.exists() else 'None'}")
-    print("=" * 70)
+    print("=" * 72)
 
-    return disc_stats, class_stats, outreach_stats
+    # --------------------------------------------------------------------------
+    # STEP 6: PHASE 5 SQLITE DATABASE SUMMARY REPORT
+    # --------------------------------------------------------------------------
+    db_stats = get_database_stats()
+    print("\n" + "=" * 72)
+    print("PHASE 5: ENTERPRISE SQLITE DATABASE REPORT (export_automation.db)")
+    print("=" * 72)
+    print(f"Relational Database Location : {config.DB_PATH}")
+    print(f"Master Cataloged Buyers      : {db_stats['total_buyers']}")
+    print(f"B2B Wholesale / Studio Leads : {db_stats['business_buyers']}")
+    print(f"B2C Solo / Personal Buyers   : {db_stats['individual_buyers']}")
+    print("-" * 72)
+    print(f"Tier 1 Priority Buyers in DB : {db_stats['tier_1_count']}")
+    print(f"Tier 2 Priority Buyers in DB : {db_stats['tier_2_count']}")
+    print(f"Tier 3 Priority Buyers in DB : {db_stats['tier_3_count']}")
+    print("-" * 72)
+    print(f"Outreach Dispatches in DB    : {db_stats['outreach_success'] + db_stats['outreach_simulated']}")
+    print(f"Total Audit Trail Events     : {db_stats['total_activities']}")
+    print("=" * 72)
+
+    return disc_stats, class_stats, outreach_stats, db_stats
 
 
 if __name__ == "__main__":

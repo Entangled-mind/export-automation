@@ -25,6 +25,7 @@ BUSINESS_BUYERS_CSV = DATA_DIR / "business_buyers.csv"
 INDIVIDUAL_BUYERS_CSV = DATA_DIR / "individual_buyers.csv"
 SENT_LOG_CSV = DATA_DIR / "sent_log.csv"
 ACTIVITY_LOG_CSV = DATA_DIR / "activity_log.csv"
+DB_PATH = DATA_DIR / "export_automation.db"
 ASSETS_DIR = BASE_DIR / "assets"
 
 # ==============================================================================
