@@ -87,3 +87,33 @@ timestamp,event,email,status,message
 2026-09-23T18:38:34,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'
 2026-09-23T18:51:50,MANUAL_LEAD_ADDED,wholesale@alpinesound.de,BUSINESS,"Added Marcus Vance (Alpine Sound Healing Studio GmbH) - [Heuristic] Strong commercial indicators in company name ('Alpine Sound Healing Studio GmbH') with terms: studio, sound healing, gmbh."
 2026-09-24T18:11:44,OUTREACH_DISPATCH,wholesale@alpinesound.de,SUCCESS,Dispatched wholesale proposal & PDF catalog to Alpine Sound Healing Studio GmbH.
+2026-09-24T18:18:36,SYSTEM_INIT,,INFO,"Initialized CSV databases (buyers, sent_log, activity_log, business/individual CSVs)."
+2026-09-24T18:18:36,OUTREACH_CHECK,contact@soundsanctuary.com,SKIPPED,Email 'contact@soundsanctuary.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:36,OUTREACH_CHECK,purchasing@himalayan-sound.de,SKIPPED,Email 'purchasing@himalayan-sound.de' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:36,OUTREACH_CHECK,orders@dharmameditation.co.uk,SKIPPED,Email 'orders@dharmameditation.co.uk' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:36,OUTREACH_CHECK,procurement@zenithspa.ca,SKIPPED,Email 'procurement@zenithspa.ca' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:36,DUPLICATE_CHECK,michael.vance88@gmail.com,SKIPPED,Duplicate lead 'michael.vance88@gmail.com' already cataloged in buyers.csv.
+2026-09-24T18:18:36,DUPLICATE_CHECK,elena_yoga@yahoo.com,SKIPPED,Duplicate lead 'elena_yoga@yahoo.com' already cataloged in buyers.csv.
+2026-09-24T18:18:36,OUTREACH_CHECK,ananya@lotussound.in,SKIPPED,Email 'ananya@lotussound.in' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:36,OUTREACH_CHECK,sales@apexmeditation.com,SKIPPED,Email 'sales@apexmeditation.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:36,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'
+2026-09-24T18:18:44,SYSTEM_INIT,,INFO,"Initialized CSV databases (buyers, sent_log, activity_log, business/individual CSVs)."
+2026-09-24T18:18:44,OUTREACH_CHECK,contact@soundsanctuary.com,SKIPPED,Email 'contact@soundsanctuary.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:44,OUTREACH_CHECK,purchasing@himalayan-sound.de,SKIPPED,Email 'purchasing@himalayan-sound.de' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:44,OUTREACH_CHECK,orders@dharmameditation.co.uk,SKIPPED,Email 'orders@dharmameditation.co.uk' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:44,OUTREACH_CHECK,procurement@zenithspa.ca,SKIPPED,Email 'procurement@zenithspa.ca' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:44,DUPLICATE_CHECK,michael.vance88@gmail.com,SKIPPED,Duplicate lead 'michael.vance88@gmail.com' already cataloged in buyers.csv.
+2026-09-24T18:18:44,DUPLICATE_CHECK,elena_yoga@yahoo.com,SKIPPED,Duplicate lead 'elena_yoga@yahoo.com' already cataloged in buyers.csv.
+2026-09-24T18:18:44,OUTREACH_CHECK,ananya@lotussound.in,SKIPPED,Email 'ananya@lotussound.in' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:44,OUTREACH_CHECK,sales@apexmeditation.com,SKIPPED,Email 'sales@apexmeditation.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:18:44,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'
+2026-09-24T18:21:24,SYSTEM_INIT,,INFO,"Initialized CSV databases (buyers, sent_log, activity_log, business/individual CSVs)."
+2026-09-24T18:21:24,OUTREACH_CHECK,contact@soundsanctuary.com,SKIPPED,Email 'contact@soundsanctuary.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:21:24,OUTREACH_CHECK,purchasing@himalayan-sound.de,SKIPPED,Email 'purchasing@himalayan-sound.de' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:21:24,OUTREACH_CHECK,orders@dharmameditation.co.uk,SKIPPED,Email 'orders@dharmameditation.co.uk' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:21:24,OUTREACH_CHECK,procurement@zenithspa.ca,SKIPPED,Email 'procurement@zenithspa.ca' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:21:24,DUPLICATE_CHECK,michael.vance88@gmail.com,SKIPPED,Duplicate lead 'michael.vance88@gmail.com' already cataloged in buyers.csv.
+2026-09-24T18:21:24,DUPLICATE_CHECK,elena_yoga@yahoo.com,SKIPPED,Duplicate lead 'elena_yoga@yahoo.com' already cataloged in buyers.csv.
+2026-09-24T18:21:24,OUTREACH_CHECK,ananya@lotussound.in,SKIPPED,Email 'ananya@lotussound.in' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:21:24,OUTREACH_CHECK,sales@apexmeditation.com,SKIPPED,Email 'sales@apexmeditation.com' has prior SUCCESS in sent_log.csv. Outreach skipped.
+2026-09-24T18:21:24,EMAIL_VALIDATION,invalid@contact@nowhere,REJECTED,Invalid email syntax: 'invalid@contact@nowhere'
