@@ -30,7 +30,15 @@ ASSETS_DIR = BASE_DIR / "assets"
 # ==============================================================================
 # APPLICATION & DISCOVERY SETTINGS
 # ==============================================================================
-SEARCH_KEYWORD = os.getenv("SEARCH_KEYWORD", "B2B wholesale distributors import export")
+TEST_MODE = os.getenv("TEST_MODE", "True").lower() in ("true", "1", "yes")
+SEARCH_KEYWORD = os.getenv("SEARCH_KEYWORD", "Singing Bowls wholesale imports studio")
+
+# Data Quality Status Constants
+STATUS_VALID = "VALID"
+STATUS_INCOMPLETE = "INCOMPLETE"
+STATUS_INVALID_EMAIL = "INVALID_EMAIL"
+STATUS_DUPLICATE = "DUPLICATE"
+STATUS_REJECTED = "REJECTED"
 
 try:
     DAILY_SEND_LIMIT = int(os.getenv("DAILY_SEND_LIMIT", "100"))

@@ -1,4 +1,4 @@
-﻿"""Email validation and duplicate checking module for EXPORT Automation System.
+"""Email validation and duplicate checking module for EXPORT Automation System.
 
 Provides syntax and structural validation for buyer email addresses, along with
 reusable duplicate detection against buyers.csv and sent_log.csv.
@@ -34,6 +34,41 @@ KNOWN_PLACEHOLDERS = {
     "abc@",
     "@gmail.com",
 }
+
+PLACEHOLDER_DOMAINS = {
+    "example.com",
+    "example.org",
+    "example.net",
+    "test.com",
+    "sample.com",
+    "placeholder.com",
+}
+
+
+def is_placeholder_email(email: Optional[str]) -> bool:
+    """Check if an email address is an obvious placeholder, sample, or dummy test string.
+
+    Args:
+        email: Email address to inspect.
+
+    Returns:
+        True if the email matches known placeholder signatures, False otherwise.
+    """
+    if not email or not isinstance(email, str):
+        return True
+
+    cleaned = email.strip().lower()
+    if cleaned in KNOWN_PLACEHOLDERS:
+        return True
+
+    if "@" in cleaned:
+        local, domain = cleaned.split("@", 1)
+        if domain in PLACEHOLDER_DOMAINS:
+            return True
+        if local in ("test", "example", "sample", "admin", "null") and domain in ("test.com", "example.com"):
+            return True
+
+    return False
 
 
 def is_valid_email(email: Optional[str]) -> bool:

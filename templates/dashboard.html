@@ -119,6 +119,148 @@
         .close-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
         #notification { position: fixed; bottom: 24px; right: 24px; padding: 14px 22px; background: #18223c; border: 1px solid var(--accent-indigo); border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,0.6); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 9999; }
         #notification.show { transform: translateY(0); opacity: 1; }
+
+        .mobile-menu-btn { display: none; }
+        .sidebar-overlay { display: none; }
+
+        /* Tablet & Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .charts-row { grid-template-columns: 1fr 1fr; }
+            .stepper-stages { grid-template-columns: repeat(3, 1fr); }
+            .workspace { padding: 20px 18px; }
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-x: hidden; }
+            aside.sidebar {
+                position: fixed;
+                top: 0;
+                left: -290px;
+                width: 280px;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 10px 0 25px rgba(0,0,0,0.5);
+            }
+            aside.sidebar.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.75);
+                backdrop-filter: blur(4px);
+                z-index: 999;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.25s ease;
+            }
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            header.top-header {
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .header-top-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .mobile-menu-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                background: var(--bg-card);
+                border: 1px solid var(--border-subtle);
+                border-radius: 8px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+            .mobile-menu-btn:hover {
+                background: var(--bg-card-hover);
+            }
+            .header-title-box h1 { font-size: 16px; line-height: 1.2; }
+            .header-title-box p { font-size: 11px; margin-top: 2px; }
+
+            .header-actions {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 4px;
+                gap: 8px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .header-actions .btn {
+                white-space: nowrap;
+                font-size: 11px;
+                padding: 6px 12px;
+                flex-shrink: 0;
+            }
+
+            .workspace { padding: 14px 12px; gap: 16px; }
+
+            .stepper-stages {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .stage-box { padding: 8px 10px; gap: 8px; }
+            .stage-num { width: 20px; height: 20px; font-size: 10px; }
+            .stage-title { font-size: 11px; }
+            .stage-sub { font-size: 9px; }
+
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .kpi-card { padding: 14px; gap: 4px; }
+            .kpi-num { font-size: 26px; }
+            .kpi-title { font-size: 10px; }
+            .kpi-meta { font-size: 10px; }
+            .kpi-badge { top: 10px; right: 10px; font-size: 9px; padding: 2px 6px; }
+
+            .charts-row { grid-template-columns: 1fr; gap: 14px; }
+            .chart-box { padding: 14px; }
+            .lab-grid { grid-template-columns: 1fr; gap: 14px; }
+            .lab-card { padding: 16px; gap: 10px; }
+            .input-row { flex-direction: column; gap: 8px; }
+
+            .drawer {
+                width: 100%;
+                max-width: 100%;
+                right: -100%;
+                padding: 20px 16px;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+            }
+            table { min-width: 580px; font-size: 12px; }
+            th, td { padding: 10px 12px; }
+
+            .modal-box {
+                width: 95%;
+                padding: 16px;
+                max-height: 94vh;
+            }
+            #notification {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                text-align: center;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>

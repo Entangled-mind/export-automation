@@ -1,14 +1,14 @@
-﻿"""Main entry point for EXPORT Automation System (Phase 2).
+"""Main entry point for EXPORT Automation System (Phase 2: Lead Discovery + Data Quality).
 
-Orchestrates the complete Phase 2 pipeline:
-1. Lead Discovery (Singing Bowls search adapters & directory parsing)
-2. Normalization & Sanitization
-3. Syntactic Email Validation
-4. Duplicate Prevention (Discovery & Prior Sent History)
-5. Master Buyer Cataloging (data/buyers.csv)
-6. AI Classification (Google Gemini / Heuristic: B2B vs B2C)
-7. Contact Segregation (data/business_buyers.csv & data/individual_buyers.csv)
-8. Activity Auditing & Dynamic Performance Reporting
+Orchestrates the Phase 2 discovery and data-quality pipeline:
+1. Lead Discovery (search/ package: Google Search, Business Directories, Website Extraction)
+2. Data Extraction & Normalization
+3. Email Syntax Validation & Placeholder Filtering
+4. Data Quality & Metadata Hygiene Checks (VALID, INCOMPLETE, INVALID_EMAIL, DUPLICATE, REJECTED)
+5. Duplicate Prevention (Cross-referencing buyers.csv)
+6. Master Lead Cataloging (data/buyers.csv)
+7. Activity Auditing (data/activity_log.csv)
+8. Discovery Statistics & Reporting
 """
 
 import sys
@@ -19,176 +19,148 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from classification.classifier import classify_buyer
 import config
-from discovery.search_adapter import discover_buyers
 from extraction.data_extractor import (
     add_buyer,
-    add_classified_buyer,
-    buyer_email_exists,
     init_buyers_csv,
     normalize_buyer,
+    read_all_buyers,
 )
 from logging_module.activity_logger import (
     init_activity_log,
     init_sent_log,
-    is_sent_successfully,
     log_activity,
-    log_sent_entry,
 )
-from validation.email_validator import is_valid_email
+from search import discover_all_leads
+from validation.data_quality import (
+    STATUS_DUPLICATE,
+    STATUS_INCOMPLETE,
+    STATUS_INVALID_EMAIL,
+    STATUS_REJECTED,
+    STATUS_VALID,
+    DiscoveryStatistics,
+    assess_lead_quality,
+)
 
 
-def seed_demo_sent_log() -> None:
-    """Seed a sample SUCCESS entry in sent_log.csv to verify outreach history checks."""
-    demo_sent_email = "sarah@wellness-singingbowls.com"
-    if not is_sent_successfully(demo_sent_email):
-        log_sent_entry(demo_sent_email, "SUCCESS")
+def run_pipeline() -> DiscoveryStatistics:
+    """Execute the Phase 2 Lead Discovery and Data Quality pipeline.
 
+    Returns:
+        DiscoveryStatistics object containing aggregated execution metrics.
+    """
+    stats = DiscoveryStatistics()
 
-def run_pipeline() -> None:
-    """Execute the end-to-end Phase 2 automation pipeline."""
     print("=" * 65)
-    print("EXPORT Automation System - Phase 2 (Discovery & AI Pipeline)")
+    print("EXPORT AUTOMATION SYSTEM -- PHASE 2 (LEAD DISCOVERY + DATA QUALITY)")
     print(f"Target Product : {config.SEARCH_KEYWORD}")
+    print(f"Execution Mode : {'TEST_MODE (Offline Mock Fixtures)' if config.TEST_MODE else 'LIVE MODE'}")
     print(f"Data Directory : {config.DATA_DIR}")
-    engine_label = "Gemini AI" if config.GEMINI_API_KEY else "Heuristic Rule Engine (Offline/Zero-Key)"
-    print(f"Classify Engine: {engine_label}")
     print("=" * 65)
 
     # Initialize CSV storage files
     init_buyers_csv()
     init_sent_log()
     init_activity_log()
-    seed_demo_sent_log()
 
     log_activity(
-        event="SYSTEM_INIT",
+        event="PIPELINE_INIT",
         email="",
         status="INFO",
-        message="Initialized CSV databases (buyers, sent_log, activity_log, business/individual CSVs).",
+        message=f"Initialized Phase 2 discovery pipeline. TEST_MODE={config.TEST_MODE}.",
     )
 
     # --------------------------------------------------------------------------
-    # STEP 1: BUYER DISCOVERY
+    # STEP 1: LEAD DISCOVERY
     # --------------------------------------------------------------------------
-    print("\n[Step 1] Discovering potential Singing Bowls buyer leads...")
-    raw_leads = discover_buyers(query=config.SEARCH_KEYWORD, limit=10, use_demo=True)
-    print(f"-> Discovered {len(raw_leads)} prospective raw leads from search/directory adapters.\n")
+    print("\n[Step 1] Discovering buyer leads across modular search adapters...")
+    raw_leads = discover_all_leads(
+        query=config.SEARCH_KEYWORD,
+        limit=15,
+        test_mode=config.TEST_MODE,
+    )
+    print(f"-> Discovered {len(raw_leads)} raw results from Google, Directories, and Websites.\n")
 
-    # Metrics counters
-    total_leads = len(raw_leads)
-    valid_emails = 0
-    invalid_emails = 0
-    new_buyers_added = 0
-    duplicate_buyers_skipped = 0
-    previously_sent_skipped = 0
-    business_count = 0
-    individual_count = 0
+    # Read existing buyers to check for duplicates
+    existing_buyers = read_all_buyers()
 
-    print("--- Processing & Classifying Leads ---")
+    print("--- Processing Leads & Assessing Data Quality ---")
 
     for raw in raw_leads:
-        raw_email = raw.get("email", "")
-
         # ----------------------------------------------------------------------
-        # STEP 2: NORMALIZATION
+        # STEP 2 & 3: EXTRACTION & NORMALIZATION
         # ----------------------------------------------------------------------
         normalized = normalize_buyer(raw)
-        email = normalized["email"]
+        email = normalized.get("email", "")
+        company = normalized.get("company_name", "")
+        buyer_name = normalized.get("buyer_name", "")
 
         # ----------------------------------------------------------------------
-        # STEP 3: EMAIL SYNTAX VALIDATION
+        # STEP 4 & 5: DATA QUALITY ASSESSMENT & DEDUPLICATION
         # ----------------------------------------------------------------------
-        if not is_valid_email(email):
-            invalid_emails += 1
-            log_activity(
-                event="EMAIL_VALIDATION",
-                email=raw_email,
-                status="REJECTED",
-                message=f"Invalid email syntax: '{raw_email}'",
-            )
-            continue
+        quality_status, reason = assess_lead_quality(normalized, existing_buyers)
 
-        valid_emails += 1
+        if quality_status in (STATUS_VALID, STATUS_INCOMPLETE):
+            # Lead has valid email and is not a duplicate -> Save to database
+            success, msg = add_buyer(normalized)
 
-        # ----------------------------------------------------------------------
-        # STEP 4: DUPLICATE OUTREACH CHECK (sent_log.csv)
-        # ----------------------------------------------------------------------
-        if is_sent_successfully(email):
-            previously_sent_skipped += 1
-            log_activity(
-                event="OUTREACH_CHECK",
-                email=email,
-                status="SKIPPED",
-                message=f"Email '{email}' has prior SUCCESS in sent_log.csv. Outreach skipped.",
-            )
-            continue
+            if success:
+                # Update local cache so subsequent leads in this batch are checked against it
+                existing_buyers.append(normalized)
+                stats.record_lead(quality_status, is_newly_saved=True)
+                log_activity(
+                    event="LEAD_CATALOGED",
+                    email=email,
+                    status=quality_status,
+                    message=f"Saved lead: {buyer_name or 'N/A'} ({company or 'Individual'}) - {reason}",
+                )
+                print(f"  [SAVED] {email:<32} | Status: {quality_status:<10} | {company}")
+            else:
+                stats.record_lead(STATUS_DUPLICATE, is_newly_saved=False)
+                log_activity(
+                    event="DUPLICATE_SUPPRESSED",
+                    email=email,
+                    status="DUPLICATE",
+                    message=msg,
+                )
+                print(f"  [DUP]   {email:<32} | Status: DUPLICATE  | {msg}")
 
-        # ----------------------------------------------------------------------
-        # STEP 5: DUPLICATE DISCOVERY CHECK (buyers.csv)
-        # ----------------------------------------------------------------------
-        is_already_in_master = buyer_email_exists(email)
-        if is_already_in_master:
-            duplicate_buyers_skipped += 1
+        elif quality_status == STATUS_DUPLICATE:
+            stats.record_lead(STATUS_DUPLICATE, is_newly_saved=False)
             log_activity(
                 event="DUPLICATE_CHECK",
                 email=email,
-                status="SKIPPED",
-                message=f"Duplicate lead '{email}' already cataloged in buyers.csv.",
+                status="DUPLICATE",
+                message=reason,
             )
-            continue
+            print(f"  [DUP]   {email:<32} | Status: DUPLICATE  | {reason}")
 
-        # Add unique lead to master buyers.csv
-        success, msg = add_buyer(normalized)
-        if success:
-            new_buyers_added += 1
+        elif quality_status == STATUS_INVALID_EMAIL:
+            stats.record_lead(STATUS_INVALID_EMAIL, is_newly_saved=False)
             log_activity(
-                event="BUYER_CATALOGED",
+                event="EMAIL_VALIDATION",
                 email=email,
-                status="SUCCESS",
-                message=f"Saved to master catalog: {normalized['buyer_name']} ({normalized['company_name']})",
+                status="INVALID_EMAIL",
+                message=reason,
             )
+            print(f"  [REJ]   {email:<32} | Status: INVALID_EMAIL | {reason}")
 
-        # ----------------------------------------------------------------------
-        # STEP 6: AI CLASSIFICATION (B2B vs B2C)
-        # ----------------------------------------------------------------------
-        category, reason, confidence = classify_buyer(normalized)
-
-        if category == "BUSINESS":
-            business_count += 1
-        else:
-            individual_count += 1
-
-        log_activity(
-            event="AI_CLASSIFICATION",
-            email=email,
-            status=category,
-            message=f"{reason} (confidence: {confidence:.2f})",
-        )
-
-        # ----------------------------------------------------------------------
-        # STEP 7: CONTACT SEGREGATION (business_buyers.csv vs individual_buyers.csv)
-        # ----------------------------------------------------------------------
-        add_classified_buyer(normalized, category, reason)
+        elif quality_status == STATUS_REJECTED:
+            stats.record_lead(STATUS_REJECTED, is_newly_saved=False)
+            log_activity(
+                event="DATA_QUALITY",
+                email=email,
+                status="REJECTED",
+                message=reason,
+            )
+            print(f"  [REJ]   {email:<32} | Status: REJECTED   | {reason}")
 
     # --------------------------------------------------------------------------
-    # STEP 8: SUMMARY REPORT
+    # STEP 6: SUMMARY REPORT
     # --------------------------------------------------------------------------
-    print("\n" + "=" * 55)
-    print("EXPORT AUTOMATION SYSTEM - PHASE 2 SUMMARY")
-    print("=" * 55)
-    print(f"Raw leads discovered         : {total_leads}")
-    print(f"Valid emails verified        : {valid_emails}")
-    print(f"Invalid emails rejected      : {invalid_emails}")
-    print(f"New buyers added to catalog  : {new_buyers_added}")
-    print(f"Duplicate leads skipped      : {duplicate_buyers_skipped}")
-    print(f"Prior sent emails skipped    : {previously_sent_skipped}")
-    print("-" * 55)
-    print(f"Classified as BUSINESS (B2B) : {business_count} -> data/business_buyers.csv")
-    print(f"Classified as INDIVIDUAL(B2C): {individual_count} -> data/individual_buyers.csv")
-    print("=" * 55)
-    print("Phase 2 pipeline completed successfully.\n")
+    print()
+    stats.print_summary()
+    return stats
 
 
 if __name__ == "__main__":

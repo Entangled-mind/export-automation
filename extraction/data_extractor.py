@@ -1,4 +1,4 @@
-﻿"""Data extraction, normalization, and segregated storage module for EXPORT Automation System.
+"""Data extraction, normalization, and segregated storage module for EXPORT Automation System.
 
 Handles cleaning buyer records and managing the local CSV databases:
 - data/buyers.csv (master database)
@@ -139,6 +139,38 @@ def buyer_email_exists(email: str, csv_path: Optional[Path] = None) -> bool:
         if normalize_email(buyer.get("email")) == target:
             return True
     return False
+
+
+def buyer_company_and_website_exists(
+    company: str,
+    website: str,
+    existing_buyers: Optional[List[Dict[str, str]]] = None,
+    csv_path: Optional[Path] = None,
+) -> bool:
+    """Check if a buyer with the same company name and website already exists.
+
+    Args:
+        company: Company name to check.
+        website: Website URL to check.
+        existing_buyers: Optional pre-loaded list of buyer dictionaries.
+        csv_path: Optional custom path for buyers.csv.
+
+    Returns:
+        True if both company and website match an existing record, False otherwise.
+    """
+    clean_company = (company or "").strip().lower()
+    clean_website = (website or "").strip().lower().rstrip("/")
+    if not clean_company or not clean_website:
+        return False
+
+    buyers = existing_buyers if existing_buyers is not None else read_all_buyers(csv_path)
+    for b in buyers:
+        b_company = (b.get("company_name") or "").strip().lower()
+        b_website = (b.get("website") or "").strip().lower().rstrip("/")
+        if b_company and b_website and b_company == clean_company and b_website == clean_website:
+            return True
+    return False
+
 
 
 def add_buyer(
