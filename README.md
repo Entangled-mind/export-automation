@@ -1,8 +1,8 @@
-﻿# EXPORT Automation System — API 3 (Singing Bowls Export Business)
+# EXPORT Automation System — API 3 (Global B2B Lead Platform)
 
-> **Phases 1 & 2: Complete Local Foundation, Lead Discovery & AI Classification**
+> **Phases 1 & 2: Complete Local Foundation, Lead Discovery, AI Classification & Interactive Dashboard**
 
-The **EXPORT Automation System** is designed for a Singing Bowls export business to discover international buyers, normalize and validate contact data, prevent duplicates, intelligently classify contacts into B2B businesses vs B2C individuals with AI, and prepare targeted wholesale outreach.
+The **EXPORT Automation System** is an automated pipeline designed for export businesses to discover international buyers, normalize and validate contact data, prevent duplicates, intelligently classify contacts into B2B wholesale businesses vs B2C individuals with AI, and prepare targeted commercial outreach.
 
 ---
 

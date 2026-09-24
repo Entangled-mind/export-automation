@@ -1,6 +1,6 @@
-﻿"""Buyer Discovery and Search Adapter module for EXPORT Automation System.
+"""Buyer Discovery and Search Adapter module for EXPORT Automation System.
 
-Discovers potential Singing Bowls buyer leads from permitted web directories,
+Discovers potential B2B buyer leads from permitted web directories,
 search results, and simulated market discovery adapters.
 """
 
@@ -86,8 +86,8 @@ DEMO_SINGING_BOWLS_LEADS = [
 ]
 
 
-def fetch_mock_directory_leads(query: str = "Singing Bowls", limit: int = 10) -> List[Dict[str, str]]:
-    """Return simulated search/directory discovery results for Singing Bowls.
+def fetch_mock_directory_leads(query: str = "Wholesale Imports", limit: int = 10) -> List[Dict[str, str]]:
+    """Return simulated search/directory discovery results for wholesale buyers.
 
     Args:
         query: Search query terms.
@@ -142,7 +142,7 @@ def parse_directory_html(html_content: str, source_label: str = "HTML Directory"
 
 
 def discover_buyers(
-    query: str = "Singing Bowls",
+    query: str = "Wholesale Imports",
     limit: int = 10,
     use_demo: bool = True,
     custom_sources: Optional[List[Dict[str, str]]] = None,
@@ -153,7 +153,7 @@ def discover_buyers(
     or user-provided sources.
 
     Args:
-        query: Target product keyword (e.g. 'Singing Bowls').
+        query: Target product keyword (e.g. 'Wholesale Imports').
         limit: Max records to discover.
         use_demo: Whether to include the curated demo leads.
         custom_sources: Optional list of additional raw records.

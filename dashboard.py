@@ -1,4 +1,4 @@
-﻿"""Interactive Web Dashboard for EXPORT Automation System (Singing Bowls).
+"""Interactive Web Dashboard for EXPORT Automation System.
 
 Features:
 - Live KPI Metrics and Performance Counters
@@ -288,7 +288,7 @@ def start_server(port: int = 5000) -> None:
     httpd = ThreadingHTTPServer(server_address, DashboardRequestHandler)
     print("=" * 65)
     print(f"EXPORT Automation Dashboard is live at: http://localhost:{port}")
-    print("Open this URL in your web browser to explore your Singing Bowls leads.")
+    print("Open this URL in your web browser to explore your verified export leads.")
     print("=" * 65)
     try:
         httpd.serve_forever()

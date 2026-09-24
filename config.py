@@ -1,4 +1,4 @@
-﻿"""Configuration module for EXPORT Automation System (Phase 1 & Phase 2).
+"""Configuration module for EXPORT Automation System (Phase 1 & Phase 2).
 
 Loads environment variables and sets up project paths and default parameters.
 """
@@ -30,7 +30,7 @@ ASSETS_DIR = BASE_DIR / "assets"
 # ==============================================================================
 # APPLICATION & DISCOVERY SETTINGS
 # ==============================================================================
-SEARCH_KEYWORD = os.getenv("SEARCH_KEYWORD", "Singing Bowls wholesale imports studio")
+SEARCH_KEYWORD = os.getenv("SEARCH_KEYWORD", "B2B wholesale distributors import export")
 
 try:
     DAILY_SEND_LIMIT = int(os.getenv("DAILY_SEND_LIMIT", "100"))

@@ -1,4 +1,4 @@
-﻿"""Buyer AI classification module for EXPORT Automation System.
+"""Buyer AI classification module for EXPORT Automation System.
 
 Categorizes discovered contacts into:
 - BUSINESS (B2B wholesale importers, studios, wellness centers, retailers)
@@ -154,8 +154,8 @@ def gemini_classify(buyer: Dict[str, str], api_key: str) -> Optional[Tuple[str, 
     """
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{config.GEMINI_MODEL}:generateContent?key={api_key}"
 
-    prompt = f"""You are an export sales analyst for a Singing Bowls manufacturer.
-Classify the following contact into either "BUSINESS" (B2B: wholesaler, distributor, yoga/sound studio, wellness center, gift shop, importer) or "INDIVIDUAL" (B2C: retail buyer, personal hobbyist).
+    prompt = f"""You are an export sales analyst for a global export and manufacturing business.
+Classify the following contact into either "BUSINESS" (B2B: wholesaler, distributor, retailer, corporate importer) or "INDIVIDUAL" (B2C: retail buyer, personal consumer).
 
 Buyer Details:
 - Name: {buyer.get('buyer_name', '')}
