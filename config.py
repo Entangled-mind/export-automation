@@ -67,10 +67,19 @@ CATEGORY_INDIVIDUAL = "INDIVIDUAL"
 CATEGORY_IRRELEVANT = "IRRELEVANT"
 
 # ==============================================================================
-# GMAIL PLACEHOLDERS (FOR FUTURE PHASE 4 OUTREACH)
+# GMAIL OUTREACH SETTINGS (PHASE 4)
 # ==============================================================================
-# IMPORTANT:
-# The Gmail variables below are strictly placeholders for Phase 4.
-# Phase 1, 2, & 3 NEVER send real emails.
 GMAIL_EMAIL = os.getenv("GMAIL_EMAIL", "")
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+try:
+    SMTP_PORT = int(os.getenv("SMTP_PORT", "465"))
+except ValueError:
+    SMTP_PORT = 465
+USE_SSL = os.getenv("USE_SSL", "True").lower() in ("true", "1", "yes")
+DRY_RUN = os.getenv("DRY_RUN", "True").lower() in ("true", "1", "yes")
+
+# Sender Branding & Signature Defaults
+SENDER_NAME = os.getenv("SENDER_NAME", "Himalayan Export & Artisan Guild")
+SENDER_COMPANY = os.getenv("SENDER_COMPANY", "Himalayan Artisan Singing Bowls Ltd.")
+SENDER_CONTACT = os.getenv("SENDER_CONTACT", "+977-1-4412345 | export@himalayanartisanbowls.com")

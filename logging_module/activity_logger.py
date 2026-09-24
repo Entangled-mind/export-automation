@@ -1,4 +1,4 @@
-﻿"""Activity and outreach logging module for EXPORT Automation System.
+"""Activity and outreach logging module for EXPORT Automation System.
 
 Manages audit trails for Phase 1 events and tracks outreach history in sent_log.csv.
 """
@@ -102,7 +102,7 @@ def is_sent_successfully(email: str, csv_path: Optional[Path] = None) -> bool:
 
     history = read_sent_history(csv_path)
     for entry in history:
-        if entry["email"] == target and entry["status"] == "SUCCESS":
+        if entry["email"] == target and entry["status"] in ("SUCCESS", "SIMULATED_SUCCESS"):
             return True
     return False
 
