@@ -49,18 +49,28 @@ presentation_env = os.getenv("PRESENTATION_PATH", "assets/company_presentation.p
 PRESENTATION_PATH = BASE_DIR / presentation_env
 
 # ==============================================================================
-# GEMINI AI CLASSIFICATION SETTINGS
+# GEMINI AI CLASSIFICATION SETTINGS (PHASE 3)
 # ==============================================================================
 # Optional: If GEMINI_API_KEY is provided, AI classification uses Google Gemini.
 # If empty or not set, the system falls back seamlessly to rule-based heuristics.
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
+# Lead Classification & Priority Tiers
+TIER_1 = "Tier 1 - High Priority"
+TIER_2 = "Tier 2 - Medium Priority"
+TIER_3 = "Tier 3 - Low Priority"
+TIER_IRRELEVANT = "Irrelevant / Unqualified"
+
+CATEGORY_BUSINESS = "BUSINESS"
+CATEGORY_INDIVIDUAL = "INDIVIDUAL"
+CATEGORY_IRRELEVANT = "IRRELEVANT"
+
 # ==============================================================================
-# GMAIL PLACEHOLDERS (FOR FUTURE PHASE 3 OUTREACH)
+# GMAIL PLACEHOLDERS (FOR FUTURE PHASE 4 OUTREACH)
 # ==============================================================================
 # IMPORTANT:
-# The Gmail variables below are strictly placeholders for Phase 3.
-# Phase 1 & 2 NEVER send real emails.
+# The Gmail variables below are strictly placeholders for Phase 4.
+# Phase 1, 2, & 3 NEVER send real emails.
 GMAIL_EMAIL = os.getenv("GMAIL_EMAIL", "")
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")

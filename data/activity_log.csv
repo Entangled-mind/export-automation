@@ -267,3 +267,63 @@ timestamp,event,email,status,message
 2026-09-24T19:48:51,DUPLICATE_CHECK,info@zenithspa.ca,DUPLICATE,Duplicate lead: email 'info@zenithspa.ca' already cataloged.
 2026-09-24T19:48:51,DUPLICATE_CHECK,wholesale@alpinesound.de,DUPLICATE,Duplicate lead: email 'wholesale@alpinesound.de' already cataloged.
 2026-09-24T19:48:51,DUPLICATE_CHECK,sarah.meditation@gmail.com,DUPLICATE,Duplicate lead: email 'sarah.meditation@gmail.com' already cataloged.
+2026-09-24T20:00:31,PIPELINE_INIT,,INFO,Initialized Phase 3 pipeline. TEST_MODE=True.
+2026-09-24T20:00:31,DUPLICATE_CHECK,contact@soundsanctuary.com,DUPLICATE,Duplicate lead: email 'contact@soundsanctuary.com' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,purchasing@himalayan-sound.de,DUPLICATE,Duplicate lead: email 'purchasing@himalayan-sound.de' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,orders@dharmameditation.co.uk,DUPLICATE,Duplicate lead: email 'orders@dharmameditation.co.uk' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,procurement@zenithspa.ca,DUPLICATE,Duplicate lead: email 'procurement@zenithspa.ca' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,michael.vance88@gmail.com,DUPLICATE,Duplicate lead: email 'michael.vance88@gmail.com' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,elena_yoga@yahoo.com,DUPLICATE,Duplicate lead: email 'elena_yoga@yahoo.com' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,sales@apexmeditation.com,DUPLICATE,Duplicate lead: email 'sales@apexmeditation.com' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,ananya@lotussound.in,DUPLICATE,Duplicate lead: email 'ananya@lotussound.in' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,orders@tibetan-harmony.de,DUPLICATE,Duplicate lead: email 'orders@tibetan-harmony.de' already cataloged.
+2026-09-24T20:00:31,DATA_QUALITY,,REJECTED,Missing email address.
+2026-09-24T20:00:31,DUPLICATE_CHECK,procurement@zenithspa.ca,DUPLICATE,Duplicate lead: email 'procurement@zenithspa.ca' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,info@zenithspa.ca,DUPLICATE,Duplicate lead: email 'info@zenithspa.ca' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,wholesale@alpinesound.de,DUPLICATE,Duplicate lead: email 'wholesale@alpinesound.de' already cataloged.
+2026-09-24T20:00:31,DUPLICATE_CHECK,sarah.meditation@gmail.com,DUPLICATE,Duplicate lead: email 'sarah.meditation@gmail.com' already cataloged.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,john@example.com,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,jane@example.com,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,sarah@wellness-singingbowls.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,contact@soundsanctuary.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,purchasing@himalayan-sound.de,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,orders@dharmameditation.co.uk,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,procurement@zenithspa.ca,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,michael.vance88@gmail.com,TIER 3 - LOW PRIORITY,INDIVIDUAL (Score: 45) | Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,elena_yoga@yahoo.com,TIER 3 - LOW PRIORITY,INDIVIDUAL (Score: 45) | Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,ananya@lotussound.in,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,sales@apexmeditation.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,wholesale@alpinesound.de,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,orders@tibetan-harmony.de,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,info@zenithspa.ca,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:00:31,LEAD_CLASSIFIED,sarah.meditation@gmail.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,PIPELINE_INIT,,INFO,Initialized Phase 3 pipeline. TEST_MODE=True.
+2026-09-24T20:09:33,DUPLICATE_CHECK,contact@soundsanctuary.com,DUPLICATE,Duplicate lead: email 'contact@soundsanctuary.com' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,purchasing@himalayan-sound.de,DUPLICATE,Duplicate lead: email 'purchasing@himalayan-sound.de' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,orders@dharmameditation.co.uk,DUPLICATE,Duplicate lead: email 'orders@dharmameditation.co.uk' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,procurement@zenithspa.ca,DUPLICATE,Duplicate lead: email 'procurement@zenithspa.ca' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,michael.vance88@gmail.com,DUPLICATE,Duplicate lead: email 'michael.vance88@gmail.com' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,elena_yoga@yahoo.com,DUPLICATE,Duplicate lead: email 'elena_yoga@yahoo.com' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,sales@apexmeditation.com,DUPLICATE,Duplicate lead: email 'sales@apexmeditation.com' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,ananya@lotussound.in,DUPLICATE,Duplicate lead: email 'ananya@lotussound.in' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,orders@tibetan-harmony.de,DUPLICATE,Duplicate lead: email 'orders@tibetan-harmony.de' already cataloged.
+2026-09-24T20:09:33,DATA_QUALITY,,REJECTED,Missing email address.
+2026-09-24T20:09:33,DUPLICATE_CHECK,procurement@zenithspa.ca,DUPLICATE,Duplicate lead: email 'procurement@zenithspa.ca' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,info@zenithspa.ca,DUPLICATE,Duplicate lead: email 'info@zenithspa.ca' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,wholesale@alpinesound.de,DUPLICATE,Duplicate lead: email 'wholesale@alpinesound.de' already cataloged.
+2026-09-24T20:09:33,DUPLICATE_CHECK,sarah.meditation@gmail.com,DUPLICATE,Duplicate lead: email 'sarah.meditation@gmail.com' already cataloged.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,john@example.com,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,jane@example.com,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,sarah@wellness-singingbowls.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,contact@soundsanctuary.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,purchasing@himalayan-sound.de,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,orders@dharmameditation.co.uk,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,procurement@zenithspa.ca,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,michael.vance88@gmail.com,TIER 3 - LOW PRIORITY,INDIVIDUAL (Score: 45) | Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,elena_yoga@yahoo.com,TIER 3 - LOW PRIORITY,INDIVIDUAL (Score: 45) | Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,ananya@lotussound.in,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,sales@apexmeditation.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,wholesale@alpinesound.de,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,orders@tibetan-harmony.de,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,info@zenithspa.ca,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T20:09:33,LEAD_CLASSIFIED,sarah.meditation@gmail.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.

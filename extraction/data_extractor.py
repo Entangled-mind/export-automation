@@ -30,6 +30,9 @@ CLASSIFIED_FIELDS = [
     "country",
     "source_platform",
     "classification",
+    "tier",
+    "intent_score",
+    "outreach_angle",
     "reasoning",
 ]
 
@@ -207,7 +210,7 @@ def add_buyer(
 # ==============================================================================
 
 def init_classified_csv(csv_path: Path) -> Path:
-    """Initialize a classified CSV (business or individual) with headers if missing.
+    """Initialize or migrate a classified CSV with headers and modern schema.
 
     Args:
         csv_path: Path to target classified CSV file.
@@ -220,6 +223,26 @@ def init_classified_csv(csv_path: Path) -> Path:
         with open(csv_path, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=CLASSIFIED_FIELDS)
             writer.writeheader()
+        return csv_path
+
+    # If file exists, verify and migrate if headers do not match modern CLASSIFIED_FIELDS
+    with open(csv_path, mode="r", newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        header = next(reader, [])
+
+    if header and header != CLASSIFIED_FIELDS:
+        with open(csv_path, mode="r", newline="", encoding="utf-8") as f:
+            dict_reader = csv.DictReader(f)
+            existing_rows = list(dict_reader)
+        with open(csv_path, mode="w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=CLASSIFIED_FIELDS, extrasaction="ignore")
+            writer.writeheader()
+            for row in existing_rows:
+                row.setdefault("tier", "")
+                row.setdefault("intent_score", "")
+                row.setdefault("outreach_angle", "")
+                writer.writerow(row)
+
     return csv_path
 
 
@@ -228,6 +251,10 @@ def add_classified_buyer(
     classification: str,
     reasoning: str = "",
     custom_path: Optional[Path] = None,
+    tier: str = "",
+    intent_score: int = 0,
+    outreach_angle: str = "",
+    overwrite: bool = False,
 ) -> Tuple[bool, str]:
     """Store a classified buyer record into business_buyers.csv or individual_buyers.csv.
 
@@ -236,6 +263,10 @@ def add_classified_buyer(
         classification: 'BUSINESS' or 'INDIVIDUAL'.
         reasoning: Explanation for classification.
         custom_path: Optional custom file path for testing.
+        tier: Priority tier (e.g. 'Tier 1 - High Priority').
+        intent_score: Purchase intent score (0-100).
+        outreach_angle: Personalized product pitch angle.
+        overwrite: If True, updates existing record with new classification data.
 
     Returns:
         Tuple of (success: bool, message: str).
@@ -257,19 +288,35 @@ def add_classified_buyer(
 
     init_classified_csv(target_path)
 
-    # Check for duplicate in target file
-    with open(target_path, mode="r", newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if normalize_email(row.get("email")) == email:
-                return False, f"Buyer '{email}' already exists in {target_path.name}"
-
     record = dict(normalized)
     record["classification"] = category
+    record["tier"] = tier.strip()
+    record["intent_score"] = str(intent_score) if intent_score else ""
+    record["outreach_angle"] = outreach_angle.strip()
     record["reasoning"] = reasoning.strip()
 
+    # Check for existing record in target file
+    existing_rows = []
+    found_idx = -1
+    with open(target_path, mode="r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for idx, row in enumerate(reader):
+            if normalize_email(row.get("email")) == email:
+                found_idx = idx
+                if not overwrite:
+                    return False, f"Buyer '{email}' already exists in {target_path.name}"
+            existing_rows.append(dict(row))
+
+    if found_idx >= 0 and overwrite:
+        existing_rows[found_idx] = record
+        with open(target_path, mode="w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=CLASSIFIED_FIELDS, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(existing_rows)
+        return True, f"Updated '{email}' in {target_path.name}"
+
     with open(target_path, mode="a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CLASSIFIED_FIELDS)
+        writer = csv.DictWriter(f, fieldnames=CLASSIFIED_FIELDS, extrasaction="ignore")
         writer.writerow(record)
 
     return True, f"Saved '{email}' to {target_path.name}"
