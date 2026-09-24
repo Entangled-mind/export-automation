@@ -461,3 +461,59 @@ timestamp,event,email,status,message
 2026-09-24T21:05:27,OUTREACH_DUPLICATE,info@zenithspa.ca,SKIPPED,Duplicate outreach suppressed: 'info@zenithspa.ca' already contacted successfully.
 2026-09-24T21:05:27,OUTREACH_DUPLICATE,sarah.meditation@gmail.com,SKIPPED,Duplicate outreach suppressed: 'sarah.meditation@gmail.com' already contacted successfully.
 2026-09-24T21:05:27,OUTREACH_SIMULATED,lead_1790264107@singingbowltest.org,SIMULATED_SUCCESS,Simulated email delivery. Subject: 'Direct Wholesale Himalayan Singing Bowls Export -- Singing Bowl Importers LLC' (TEST_MODE dry-run).
+2026-09-24T21:09:51,MANUAL_LEAD_ADDED,lead_1790264391@singingbowltest.org,TIER 1 - HIGH PRIORITY,Added Test Importer (Singing Bowl Importers LLC) - [Gemini AI] Evaluated Singing Bowl Importers LLC: High-volume wholesale importer/distributor indicators: importers.
+2026-09-24T21:15:04,MANUAL_LEAD_ADDED,lead_1790264704@singingbowltest.org,TIER 1 - HIGH PRIORITY,Added Test Importer (Singing Bowl Importers LLC) - [Gemini AI] Evaluated Singing Bowl Importers LLC: High-volume wholesale importer/distributor indicators: importers.
+2026-09-24T21:17:20,MANUAL_LEAD_ADDED,lead_1790264840@singingbowltest.org,TIER 1 - HIGH PRIORITY,Added Test Importer (Singing Bowl Importers LLC) - [Gemini AI] Evaluated Singing Bowl Importers LLC: High-volume wholesale importer/distributor indicators: importers.
+2026-09-24T21:17:49,DATABASE_MIGRATION,,SUCCESS,"Migrated records to SQLite: {'buyers': 19, 'classifications': 19, 'outreach_logs': 0, 'activity_logs': 0}"
+2026-09-24T21:17:49,PIPELINE_INIT,,INFO,"Initialized pipeline. TEST_MODE=True, DRY_RUN=True."
+2026-09-24T21:17:49,DUPLICATE_CHECK,contact@soundsanctuary.com,DUPLICATE,Duplicate lead: email 'contact@soundsanctuary.com' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,purchasing@himalayan-sound.de,DUPLICATE,Duplicate lead: email 'purchasing@himalayan-sound.de' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,orders@dharmameditation.co.uk,DUPLICATE,Duplicate lead: email 'orders@dharmameditation.co.uk' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,procurement@zenithspa.ca,DUPLICATE,Duplicate lead: email 'procurement@zenithspa.ca' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,michael.vance88@gmail.com,DUPLICATE,Duplicate lead: email 'michael.vance88@gmail.com' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,elena_yoga@yahoo.com,DUPLICATE,Duplicate lead: email 'elena_yoga@yahoo.com' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,sales@apexmeditation.com,DUPLICATE,Duplicate lead: email 'sales@apexmeditation.com' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,ananya@lotussound.in,DUPLICATE,Duplicate lead: email 'ananya@lotussound.in' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,orders@tibetan-harmony.de,DUPLICATE,Duplicate lead: email 'orders@tibetan-harmony.de' already cataloged.
+2026-09-24T21:17:49,DATA_QUALITY,,REJECTED,Missing email address.
+2026-09-24T21:17:49,DUPLICATE_CHECK,procurement@zenithspa.ca,DUPLICATE,Duplicate lead: email 'procurement@zenithspa.ca' already cataloged.
+2026-09-24T21:17:49,DUPLICATE_CHECK,info@zenithspa.ca,DUPLICATE,Duplicate lead: email 'info@zenithspa.ca' already cataloged.
+2026-09-24T21:17:50,DUPLICATE_CHECK,wholesale@alpinesound.de,DUPLICATE,Duplicate lead: email 'wholesale@alpinesound.de' already cataloged.
+2026-09-24T21:17:50,DUPLICATE_CHECK,sarah.meditation@gmail.com,DUPLICATE,Duplicate lead: email 'sarah.meditation@gmail.com' already cataloged.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,john@example.com,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,jane@example.com,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,sarah@wellness-singingbowls.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,contact@soundsanctuary.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,purchasing@himalayan-sound.de,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,orders@dharmameditation.co.uk,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,procurement@zenithspa.ca,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,michael.vance88@gmail.com,TIER 3 - LOW PRIORITY,INDIVIDUAL (Score: 45) | Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,elena_yoga@yahoo.com,TIER 3 - LOW PRIORITY,INDIVIDUAL (Score: 45) | Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,ananya@lotussound.in,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,sales@apexmeditation.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,wholesale@alpinesound.de,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,orders@tibetan-harmony.de,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,info@zenithspa.ca,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,sarah.meditation@gmail.com,TIER 2 - MEDIUM PRIORITY,BUSINESS (Score: 80) | Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,lead_1790264107@singingbowltest.org,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,lead_1790264391@singingbowltest.org,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,lead_1790264704@singingbowltest.org,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,LEAD_CLASSIFIED,lead_1790264840@singingbowltest.org,TIER 1 - HIGH PRIORITY,BUSINESS (Score: 94) | Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,john@example.com,SKIPPED,Duplicate outreach suppressed: 'john@example.com' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,jane@example.com,SKIPPED,Duplicate outreach suppressed: 'jane@example.com' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,sarah@wellness-singingbowls.com,SKIPPED,Duplicate outreach suppressed: 'sarah@wellness-singingbowls.com' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,contact@soundsanctuary.com,SKIPPED,Duplicate outreach suppressed: 'contact@soundsanctuary.com' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,purchasing@himalayan-sound.de,SKIPPED,Duplicate outreach suppressed: 'purchasing@himalayan-sound.de' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,orders@dharmameditation.co.uk,SKIPPED,Duplicate outreach suppressed: 'orders@dharmameditation.co.uk' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,procurement@zenithspa.ca,SKIPPED,Duplicate outreach suppressed: 'procurement@zenithspa.ca' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,ananya@lotussound.in,SKIPPED,Duplicate outreach suppressed: 'ananya@lotussound.in' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,sales@apexmeditation.com,SKIPPED,Duplicate outreach suppressed: 'sales@apexmeditation.com' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,wholesale@alpinesound.de,SKIPPED,Duplicate outreach suppressed: 'wholesale@alpinesound.de' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,orders@tibetan-harmony.de,SKIPPED,Duplicate outreach suppressed: 'orders@tibetan-harmony.de' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,info@zenithspa.ca,SKIPPED,Duplicate outreach suppressed: 'info@zenithspa.ca' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,sarah.meditation@gmail.com,SKIPPED,Duplicate outreach suppressed: 'sarah.meditation@gmail.com' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_DUPLICATE,lead_1790264107@singingbowltest.org,SKIPPED,Duplicate outreach suppressed: 'lead_1790264107@singingbowltest.org' already contacted successfully.
+2026-09-24T21:17:50,OUTREACH_SIMULATED,lead_1790264391@singingbowltest.org,SIMULATED_SUCCESS,Simulated email delivery. Subject: 'Direct Wholesale Himalayan Singing Bowls Export -- Singing Bowl Importers LLC' (TEST_MODE dry-run).
+2026-09-24T21:17:50,OUTREACH_SIMULATED,lead_1790264704@singingbowltest.org,SIMULATED_SUCCESS,Simulated email delivery. Subject: 'Direct Wholesale Himalayan Singing Bowls Export -- Singing Bowl Importers LLC' (TEST_MODE dry-run).
+2026-09-24T21:17:50,OUTREACH_SIMULATED,lead_1790264840@singingbowltest.org,SIMULATED_SUCCESS,Simulated email delivery. Subject: 'Direct Wholesale Himalayan Singing Bowls Export -- Singing Bowl Importers LLC' (TEST_MODE dry-run).
+2026-09-24T21:18:33,MANUAL_LEAD_ADDED,lead_1790264913@singingbowltest.org,TIER 1 - HIGH PRIORITY,Added Test Importer (Singing Bowl Importers LLC) - [Gemini AI] Evaluated Singing Bowl Importers LLC: High-volume wholesale importer/distributor indicators: importers.

@@ -12,6 +12,7 @@ Features:
 - Demo Reset Engine: One-click reset and re-seed for clean portfolio demonstration video recordings.
 """
 
+import argparse
 import csv
 import json
 import os
@@ -396,12 +397,35 @@ class DashboardRequestHandler(BaseHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND, "Endpoint not found")
 
 
-def start_server(port: int = 5000) -> None:
+def parse_args(args: Optional[List[str]] = None) -> argparse.Namespace:
+    """Parse command line arguments for launching the web dashboard."""
+    parser = argparse.ArgumentParser(
+        prog="dashboard.py",
+        description="Interactive Web Dashboard for EXPORT Automation System (SQLite Backend).",
+    )
+    parser.add_argument(
+        "--port",
+        "-p",
+        type=int,
+        default=5000,
+        help="Port number to bind HTTP server to (default: 5000).",
+    )
+    parser.add_argument(
+        "--host",
+        "-H",
+        type=str,
+        default="127.0.0.1",
+        help="Host address to bind HTTP server to (default: 127.0.0.1, use 0.0.0.0 for all interfaces).",
+    )
+    return parser.parse_args(args)
+
+
+def start_server(port: int = 5000, host: str = "127.0.0.1") -> None:
     """Launch the dashboard HTTP server."""
-    server_address = ("127.0.0.1", port)
+    server_address = (host, port)
     httpd = ThreadingHTTPServer(server_address, DashboardRequestHandler)
     print("=" * 65)
-    print(f"EXPORT Automation Dashboard is live at: http://localhost:{port}")
+    print(f"EXPORT Automation Dashboard is live at: http://{host}:{port}")
     print("Open this URL in your web browser to explore your verified export leads.")
     print("=" * 65)
     try:
@@ -411,5 +435,11 @@ def start_server(port: int = 5000) -> None:
         httpd.server_close()
 
 
+def main() -> None:
+    """Dashboard CLI execution entrypoint."""
+    args = parse_args()
+    start_server(port=args.port, host=args.host)
+
+
 if __name__ == "__main__":
-    start_server(5000)
+    main()
