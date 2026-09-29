@@ -365,14 +365,14 @@ def render_email_draft(
 
     # Use a product-neutral message for decorative goods and other custom products.
     # The singing-bowl catalog and legacy specialist copy only apply to that product.
-    is_singing_bowls = "singing bowl" in (buyer.get("product") or "").lower()
-    product_name = (buyer.get("product") or config.SEARCH_KEYWORD).strip()
+    product_name = (buyer.get("product") or config.SEARCH_KEYWORD or "").strip()
+    is_singing_bowls = "singing bowl" in product_name.lower()
     if product_name and not is_singing_bowls:
         greeting = to_name or (f"the team at {company_name}" if company_name else "Purchasing Team")
         subject = f"Wholesale inquiry: {product_name}" + (f" for {company_name}" if company_name else "")
         body_text = (
             f"Dear {greeting},\n\n"
-            f"I?m reaching out from {config.SENDER_COMPANY} to introduce our {product_name} for your consideration.\n\n"
+            f"I'm reaching out from {config.SENDER_COMPANY} to introduce our {product_name} for your consideration.\n\n"
             "If your team is reviewing suppliers in this category, I would be glad to share product specifications, "
             "wholesale pricing, minimum order quantities, and lead times.\n\n"
             "Would you be open to receiving more information?\n\n"
