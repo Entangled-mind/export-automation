@@ -104,47 +104,68 @@ st.markdown(
 )
 
 
+def build_gmail_compose_url(to_email: str, subject: str, body: str) -> str:
+    """Generate a 1-click web Gmail compose URL pre-filling recipient, subject, and body."""
+    params = {
+        "view": "cm",
+        "fs": "1",
+        "to": to_email,
+        "su": subject,
+        "body": body,
+    }
+    return f"https://mail.google.com/mail/?{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}"
+
+
 @st.dialog("Send email")
 def show_email_dialog(buyer: Dict[str, Any], lead_key: str) -> None:
     """Show a personalized draft and send it directly with 1 click."""
     draft = render_email_draft(buyer)
-    st.caption("Review or edit this personalized buyer email before 1-click dispatch.")
+    st.caption("Review or edit this personalized buyer email before sending.")
     st.text_input("Recipient", value=draft.to_email, disabled=True, key=f"dialog_recipient_{lead_key}")
     subject = st.text_input("Subject", value=draft.subject, key=f"dialog_subject_{lead_key}")
-    body_text = st.text_area("Message", value=draft.body_text, height=240, key=f"dialog_body_{lead_key}")
+    body_text = st.text_area("Message", value=draft.body_text, height=220, key=f"dialog_body_{lead_key}")
 
     has_configured_pwd = bool(
         config.GMAIL_APP_PASSWORD and config.GMAIL_APP_PASSWORD != "your_16_character_app_password"
     )
 
-    if config.GMAIL_EMAIL and has_configured_pwd:
-        st.markdown(f"**Connected Gmail:** `{config.GMAIL_EMAIL}` (Direct SSL)")
-        if st.button("🚀 Send Email Now (1-Click)", type="primary", key=f"dialog_send_{lead_key}", use_container_width=True):
-            with st.spinner(f"Dispatching live email to {draft.to_email}..."):
-                result = send_single_email(
-                    buyer,
-                    dry_run=False,
-                    test_mode=False,
-                    subject_override=subject,
-                    body_text_override=body_text,
-                )
-            if result.status == "SUCCESS":
-                st.success(f"🎉 Email successfully delivered to {result.email}!")
-                st.balloons()
-                st.session_state.pop("active_email_lead", None)
-                st.rerun()
-            else:
-                st.error(f"Dispatch failed: {result.message}")
-                st.warning("You can also open the prepared message in your mail app:")
-                mailto = f"mailto:{urllib.parse.quote(draft.to_email, safe='@.+-_')}?subject={urllib.parse.quote(subject)}&body={urllib.parse.quote(body_text)}"
-                st.link_button("Open prepared email in mail app", mailto, use_container_width=True)
-    else:
-        st.warning(
-            "⚠️ **Direct 1-Click Sending requires your 16-character Google App Password.**\n\n"
-            "Please configure your App Password in the sidebar on the left to send emails instantly."
-        )
-        mailto = f"mailto:{urllib.parse.quote(draft.to_email, safe='@.+-_')}?subject={urllib.parse.quote(subject)}&body={urllib.parse.quote(body_text)}"
-        st.link_button("Open prepared email in mail app", mailto, use_container_width=True)
+    gmail_url = build_gmail_compose_url(draft.to_email, subject, body_text)
+    mailto_url = f"mailto:{urllib.parse.quote(draft.to_email, safe='@.+-_')}?subject={urllib.parse.quote(subject)}&body={urllib.parse.quote(body_text)}"
+
+    st.markdown("---")
+    # PRIMARY ZERO-PASSWORD OPTION: Instant Gmail Web Compose
+    st.link_button(
+        "⚡ Send via Gmail (1-Click • No Password Needed)",
+        gmail_url,
+        type="primary",
+        use_container_width=True,
+        help="Opens Gmail directly in a new tab with recipient, subject, and personalized pitch pre-filled. Just click Send in Gmail!",
+    )
+    st.caption("✨ Recommended: Opens your browser's Gmail with everything filled out. Zero passwords or setup required.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.link_button("💻 Open in Mail Client", mailto_url, use_container_width=True)
+    with col2:
+        if has_configured_pwd:
+            if st.button("🤖 Background SMTP Send", key=f"dialog_send_{lead_key}", use_container_width=True):
+                with st.spinner(f"Dispatching live email to {draft.to_email}..."):
+                    result = send_single_email(
+                        buyer,
+                        dry_run=False,
+                        test_mode=False,
+                        subject_override=subject,
+                        body_text_override=body_text,
+                    )
+                if result.status == "SUCCESS":
+                    st.success(f"🎉 Email successfully delivered to {result.email}!")
+                    st.balloons()
+                    st.session_state.pop("active_email_lead", None)
+                    st.rerun()
+                else:
+                    st.error(f"Dispatch failed: {result.message}")
+        else:
+            st.caption("🔒 Background SMTP: Enter App Password in sidebar to enable.")
 
 
 def main():
@@ -164,11 +185,15 @@ def main():
         config.GMAIL_APP_PASSWORD and config.GMAIL_APP_PASSWORD != "your_16_character_app_password"
     )
     if has_configured_pwd:
-        st.sidebar.success(f"✅ Connected: `{config.GMAIL_EMAIL}`")
+        st.sidebar.success(f"✅ SMTP Active: `{config.GMAIL_EMAIL}`")
     else:
-        st.sidebar.warning("⚠️ Google App Password required for 1-click direct sending.")
+        st.sidebar.info("💡 **Zero Setup Sending**: You can send emails instantly via the '⚡ Send via Gmail' button with zero passwords needed!")
 
-    with st.sidebar.expander("⚙️ Connect Gmail Account", expanded=not has_configured_pwd):
+    with st.sidebar.expander("⚙️ Optional: Automated Background SMTP", expanded=False):
+        st.markdown(
+            "To send emails automatically in the background without opening Gmail tabs, "
+            "enter a 16-character Google App Password below."
+        )
         sb_email = st.text_input("Gmail Address", value=config.GMAIL_EMAIL or "priy2909@gmail.com", key="sb_email_in")
         sb_pwd = st.text_input(
             "16-char App Password",
@@ -201,10 +226,10 @@ def main():
 
         st.caption(
             "👉 **[Get 16-Character App Password](https://myaccount.google.com/apppasswords)**\n\n"
-            "1. Turn on 2-Step Verification in Google Account.\n"
-            "2. Visit `myaccount.google.com/apppasswords`.\n"
-            "3. Generate an App Password named 'Export Automation'.\n"
-            "4. Paste the 16 characters above."
+            "**Troubleshooting why it's missing:**\n"
+            "1. **2-Step Verification** MUST be ON for your Google Account.\n"
+            "2. In Google Account Search bar, type `App passwords`.\n"
+            "3. If using a work/school account, Google blocks App Passwords; use the instant **'⚡ Send via Gmail (1-Click)'** button instead!"
         )
 
     st.sidebar.markdown("---")
@@ -568,26 +593,42 @@ def main():
             )
             if research_draft.attachment_path:
                 st.caption(f"📎 Catalog attachment: {research_draft.attachment_path.name}")
-            if st.button(
-                f"🚀 Send 1-Click Email to {research_buyer.get('company_name') or research_draft.to_email}",
-                type="primary", key=f"catalog_send_{research_draft.to_email}", use_container_width=True,
-            ):
-                with st.spinner(f"Dispatching live email to {research_draft.to_email}..."):
-                    send_result = send_single_email(
-                        research_buyer,
-                        dry_run=False,
-                        test_mode=False,
-                        subject_override=research_subject,
-                        body_text_override=research_body,
-                    )
-                if send_result.status == "SUCCESS":
-                    st.success(f"🎉 Email successfully dispatched to {send_result.email} via {config.GMAIL_EMAIL}!")
-                    st.balloons()
+            gmail_url = build_gmail_compose_url(research_draft.to_email, research_subject, research_body)
+            mailto = f"mailto:{urllib.parse.quote(research_draft.to_email, safe='@.+-_')}?subject={urllib.parse.quote(research_subject)}&body={urllib.parse.quote(research_body)}"
+
+            # 1-Click Gmail Web (Zero password required)
+            st.link_button(
+                f"⚡ Send to {research_buyer.get('company_name') or research_draft.to_email} via Gmail (1-Click • No Password Needed)",
+                gmail_url,
+                type="primary",
+                use_container_width=True,
+                help="Opens Gmail directly with this personalized pitch ready to send.",
+            )
+
+            col_btn1, col_btn2 = st.columns(2)
+            with col_btn1:
+                st.link_button("💻 Open in Mail Client", mailto, use_container_width=True)
+            with col_btn2:
+                if has_configured_pwd:
+                    if st.button(
+                        "🤖 Background SMTP Send",
+                        key=f"catalog_send_{research_draft.to_email}", use_container_width=True,
+                    ):
+                        with st.spinner(f"Dispatching live email to {research_draft.to_email}..."):
+                            send_result = send_single_email(
+                                research_buyer,
+                                dry_run=False,
+                                test_mode=False,
+                                subject_override=research_subject,
+                                body_text_override=research_body,
+                            )
+                        if send_result.status == "SUCCESS":
+                            st.success(f"🎉 Email successfully dispatched to {send_result.email} via {config.GMAIL_EMAIL}!")
+                            st.balloons()
+                        else:
+                            st.error(f"Email {send_result.status.lower().replace('_', ' ')}: {send_result.message}")
                 else:
-                    st.error(f"Email {send_result.status.lower().replace('_', ' ')}: {send_result.message}")
-                    st.warning("The SMTP server did not accept this email, so it was not sent. You can open the prepared message in your mail app and send it there.")
-                    mailto = f"mailto:{urllib.parse.quote(research_draft.to_email, safe='@.+-_')}?subject={urllib.parse.quote(research_subject)}&body={urllib.parse.quote(research_body)}"
-                    st.link_button("Open prepared email in mail app", mailto, use_container_width=True)
+                    st.caption("🔒 Background SMTP available with sidebar App Password.")
 
 
 if __name__ == "__main__":
