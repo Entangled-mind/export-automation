@@ -12,8 +12,10 @@ for any user-provided product and optional country filter:
 8. Normalized reporting & metric counters
 """
 
+import concurrent.futures
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
+from urllib.parse import urlparse
 
 import config
 from database.repository import get_buyer_by_email, upsert_buyer
@@ -23,6 +25,63 @@ from search.query_generator import generate_buyer_queries
 from search.search_api import ConfigurationRequiredError, SearchAPIAdapter, search_web
 from search.website_extractor import extract_business_info, extract_emails_from_text, is_placeholder_email
 from validation.email_validator import is_valid_email
+
+
+def _process_candidate_website(
+    item: Dict[str, str],
+    clean_product: str,
+    clean_country: Optional[str],
+    is_test: bool,
+    timeout: float = 3.5,
+) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]], Optional[str]]:
+    """Process a single candidate search result and extract lead info.
+
+    Returns:
+        Tuple of (extracted_info, fallback_info, error_message).
+    """
+    target_url = item.get("url", "")
+    search_q = item.get("search_query", "")
+    try:
+        info = extract_business_info(
+            url=target_url,
+            product_keyword=clean_product,
+            search_query=search_q,
+            timeout=timeout,
+            test_mode=is_test,
+        )
+        if info:
+            if not info.get("email"):
+                snippet_emails = extract_emails_from_text(item.get("snippet", ""))
+                public_email = next((e for e in snippet_emails if is_valid_email(e) and not is_placeholder_email(e)), "")
+                if public_email:
+                    info["email"] = public_email
+                    info["email_source"] = "Public search listing; verify before sending"
+                    info["contact_source_url"] = target_url
+            info.setdefault("source_url", target_url)
+            info.setdefault("website", target_url)
+            return (info, None, None)
+        else:
+            snippet_emails = extract_emails_from_text(item.get("snippet", ""))
+            public_email = next((e for e in snippet_emails if is_valid_email(e) and not is_placeholder_email(e)), "")
+            fallback = {
+                "buyer_name": "",
+                "company_name": (item.get("title") or "").strip(),
+                "email": public_email,
+                "email_source": "Public search listing; verify before sending" if public_email else "",
+                "contact_source_url": target_url if public_email else "",
+                "website": target_url,
+                "country": clean_country or "",
+                "source_platform": "Live web search result",
+                "source_url": target_url,
+                "search_query": search_q,
+                "validation_status": config.STATUS_INCOMPLETE,
+                "validation_reason": "Website contact could not be verified automatically.",
+                "product": clean_product,
+                "unverified_search_result": True,
+            }
+            return (None, fallback, None)
+    except Exception as e:
+        return (None, None, f"Extraction failed for '{target_url}': {e}")
 
 
 def run_discovery_pipeline(
@@ -93,21 +152,22 @@ def run_discovery_pipeline(
                 "To test offline without API keys, enable TEST_MODE=true."
             )
 
+    target_raw_candidates = max(max_results, 8)
     for q in queries:
-        if len(raw_results_collected) >= min(max_results * 2, 24):
+        if len(raw_results_collected) >= target_raw_candidates:
             break
         try:
             searches_performed += 1
+            query_batch_size = min(15, max(10, max_results))
             results = adapter.search_web(
                 query=q,
-                max_results=min(10, max_results),
+                max_results=query_batch_size,
                 test_mode=is_test,
                 product=clean_product,
             )
             for res in results:
                 u = (res.get("url") or "").strip()
                 if u:
-                    from urllib.parse import urlparse
                     host = (urlparse(u).hostname or "").lower().removeprefix("www.")
                     dedup_key = host or u.rstrip("/").lower()
                     if dedup_key in seen_urls:
@@ -127,61 +187,56 @@ def run_discovery_pipeline(
     leads_discovered = 0
     raw_extracted_leads: List[Dict[str, Any]] = []
 
-    for item in raw_results_collected:
+    candidates_to_process = raw_results_collected[: max_results + 2]
+
+    if is_test or len(candidates_to_process) <= 1:
+        extracted_results = [
+            _process_candidate_website(
+                item=item,
+                clean_product=clean_product,
+                clean_country=clean_country,
+                is_test=is_test,
+                timeout=3.5,
+            )
+            for item in candidates_to_process
+        ]
+    else:
+        max_workers = min(len(candidates_to_process), 8)
+        extracted_results = [None] * len(candidates_to_process)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_idx = {
+                executor.submit(
+                    _process_candidate_website,
+                    item=item,
+                    clean_product=clean_product,
+                    clean_country=clean_country,
+                    is_test=is_test,
+                    timeout=3.5,
+                ): idx
+                for idx, item in enumerate(candidates_to_process)
+            }
+            for future in concurrent.futures.as_completed(future_to_idx):
+                idx = future_to_idx[future]
+                try:
+                    extracted_results[idx] = future.result()
+                except Exception as e:
+                    url = candidates_to_process[idx].get("url", "")
+                    extracted_results[idx] = (None, None, f"Extraction failed for '{url}': {e}")
+
+    for res in extracted_results:
+        if not res:
+            continue
         if len(raw_extracted_leads) >= max_results:
             break
-        target_url = item.get("url", "")
-        search_q = item.get("search_query", "")
-
+        info, fallback, err = res
         websites_processed += 1
-        try:
-            info = extract_business_info(
-                url=target_url,
-                product_keyword=clean_product,
-                search_query=search_q,
-                timeout=6.0,
-                test_mode=is_test,
-            )
-            if info:
-                # Search snippets occasionally expose a business email that is absent
-                # from the rendered page. Keep only syntactically valid, non-placeholder
-                # addresses and record that the listing itself was the source.
-                if not info.get("email"):
-                    snippet_emails = extract_emails_from_text(item.get("snippet", ""))
-                    public_email = next((e for e in snippet_emails if is_valid_email(e) and not is_placeholder_email(e)), "")
-                    if public_email:
-                        info["email"] = public_email
-                        info["email_source"] = "Public search listing; verify before sending"
-                        info["contact_source_url"] = target_url
-                # Preserve the exact public page that produced this lead for auditability.
-                info.setdefault("source_url", target_url)
-                info.setdefault("website", target_url)
-                leads_discovered += 1
-                # Keep country blank when it is not found on the public page. The
-                # requested target market is a search filter, not proof of location.
-                raw_extracted_leads.append(info)
-            else:
-                snippet_emails = extract_emails_from_text(item.get("snippet", ""))
-                public_email = next((e for e in snippet_emails if is_valid_email(e) and not is_placeholder_email(e)), "")
-                raw_extracted_leads.append({
-                    "buyer_name": "",
-                    "company_name": (item.get("title") or "").strip(),
-                    "email": public_email,
-                    "email_source": "Public search listing; verify before sending" if public_email else "",
-                    "contact_source_url": target_url if public_email else "",
-                    "website": target_url,
-                    "country": clean_country or "",
-                    "source_platform": "Live web search result",
-                    "source_url": target_url,
-                    "search_query": search_q,
-                    "validation_status": config.STATUS_INCOMPLETE,
-                    "validation_reason": "Website contact could not be verified automatically.",
-                    "product": clean_product,
-                    "unverified_search_result": True,
-                })
-        except Exception as e:
-            # Handle single website failure gracefully without crashing pipeline
-            errors.append(f"Extraction failed for '{target_url}': {e}")
+        if err:
+            errors.append(err)
+        elif info:
+            leads_discovered += 1
+            raw_extracted_leads.append(info)
+        elif fallback:
+            raw_extracted_leads.append(fallback)
 
     # 4. Data Quality Validation, Normalization & Deduplication
     processed_leads: List[Dict[str, Any]] = []

@@ -133,8 +133,11 @@ class SearchAPIAdapter:
         results: List[Dict[str, str]] = []
         try:
             from ddgs import DDGS
-            with DDGS() as ddgs:
-                raw_results = list(ddgs.text(query, max_results=num))
+            with DDGS(timeout=3) as ddgs:
+                try:
+                    raw_results = list(ddgs.text(query, max_results=num, backend="duckduckgo"))
+                except Exception:
+                    raw_results = list(ddgs.text(query, max_results=num))
                 for item in raw_results:
                     href = (item.get("href") or "").strip()
                     title = (item.get("title") or "").strip()

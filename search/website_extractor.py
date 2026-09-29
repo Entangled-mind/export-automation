@@ -265,7 +265,7 @@ def extract_country_from_text(page_text: str, url: str = "") -> str:
     return ""
 
 
-def is_live_website_url(url: str, timeout: float = 8.0) -> bool:
+def is_live_website_url(url: str, timeout: float = 3.0) -> bool:
     """Return True only when the URL resolves successfully and is reachable over HTTP/HTTPS."""
     if not url:
         return False
@@ -277,7 +277,7 @@ def is_live_website_url(url: str, timeout: float = 8.0) -> bool:
 
         resp = requests.get(
             normalized,
-            timeout=timeout,
+            timeout=(1.5, timeout),
             allow_redirects=True,
             headers={
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -293,7 +293,7 @@ def extract_business_info(
     url: str,
     product_keyword: str = "",
     search_query: str = "",
-    timeout: float = 6.0,
+    timeout: float = 3.5,
     test_mode: Optional[bool] = None,
 ) -> Optional[Dict[str, Any]]:
     """Retrieve public webpage and extract normalized commercial lead information.
@@ -302,7 +302,7 @@ def extract_business_info(
         url: Webpage URL to inspect.
         product_keyword: Product entered by user for relevance checking.
         search_query: The search query that surfaced this URL.
-        timeout: Network timeout in seconds (default: 6.0).
+        timeout: Network timeout in seconds (default: 3.5).
         test_mode: If True, uses offline simulation without network requests.
 
     Returns:
@@ -319,9 +319,6 @@ def extract_business_info(
     if not normalized_url.startswith(("http://", "https://")):
         normalized_url = "https://" + normalized_url
 
-    if not is_live_website_url(normalized_url, timeout=min(timeout, 8.0)):
-        return None
-
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -332,7 +329,7 @@ def extract_business_info(
     }
 
     try:
-        resp = requests.get(normalized_url, headers=headers, timeout=timeout, allow_redirects=True)
+        resp = requests.get(normalized_url, headers=headers, timeout=(2.0, timeout), allow_redirects=True)
         if resp.status_code != 200:
             return None
 
@@ -356,24 +353,30 @@ def extract_business_info(
             for anchor in soup.find_all("a", href=True)
             if (anchor.get("href") or "").lower().startswith("mailto:")
         )
-        for anchor in soup.find_all("a", href=True):
-            href = urllib.parse.urljoin(resp.url or normalized_url, anchor.get("href", "").strip())
-            parsed = urllib.parse.urlparse(href)
-            host = parsed.netloc.lower().removeprefix("www.")
-            hint = f"{parsed.path} {anchor.get_text(' ', strip=True)}".lower()
-            if host != base_host or parsed.scheme not in {"http", "https"}:
-                continue
-            if not any(term in hint for term in ("contact", "wholesale", "about", "imprint", "impressum", "sales")):
-                continue
-            clean_href = urllib.parse.urlunparse(parsed._replace(fragment=""))
-            if clean_href != (resp.url or normalized_url) and clean_href not in contact_pages:
-                contact_pages.append(clean_href)
-            if len(contact_pages) >= 3:
-                break
+
+        # Check if homepage already provided a valid direct email
+        found_emails = [e for e in extract_emails_from_text(" ".join(email_text)) if not is_placeholder_email(e)]
+
+        # Only crawl subpages if no direct email was found on the homepage
+        if not found_emails:
+            for anchor in soup.find_all("a", href=True):
+                href = urllib.parse.urljoin(resp.url or normalized_url, anchor.get("href", "").strip())
+                parsed = urllib.parse.urlparse(href)
+                host = parsed.netloc.lower().removeprefix("www.")
+                hint = f"{parsed.path} {anchor.get_text(' ', strip=True)}".lower()
+                if host != base_host or parsed.scheme not in {"http", "https"}:
+                    continue
+                if not any(term in hint for term in ("contact", "wholesale", "about", "imprint", "impressum", "sales")):
+                    continue
+                clean_href = urllib.parse.urlunparse(parsed._replace(fragment=""))
+                if clean_href != (resp.url or normalized_url) and clean_href not in contact_pages:
+                    contact_pages.append(clean_href)
+                if len(contact_pages) >= 2:
+                    break
 
         for contact_url in contact_pages:
             try:
-                contact_resp = requests.get(contact_url, headers=headers, timeout=timeout, allow_redirects=True)
+                contact_resp = requests.get(contact_url, headers=headers, timeout=(1.5, 2.5), allow_redirects=True)
                 if contact_resp.status_code != 200:
                     continue
                 contact_html = contact_resp.text.lower()

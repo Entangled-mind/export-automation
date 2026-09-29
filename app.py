@@ -345,7 +345,7 @@ def main():
                     "Maximum Results",
                     min_value=5,
                     max_value=50,
-                    value=20,
+                    value=10,
                     step=5,
                     help="Number of target buyer leads to discover.",
                 )
