@@ -36,6 +36,7 @@ def run_discovery_pipeline(
     save_to_db: bool = True,
     db_path: Optional[Path] = None,
     search_adapter: Optional[SearchAPIAdapter] = None,
+    allow_public_fallback: bool = True,
 ) -> Dict[str, Any]:
     """Execute end-to-end dynamic B2B buyer discovery for a product.
 
@@ -47,13 +48,14 @@ def run_discovery_pipeline(
         save_to_db: Whether to persist qualified discovered leads to SQLite database.
         db_path: Optional custom path to SQLite database.
         search_adapter: Optional custom SearchAPIAdapter instance.
+        allow_public_fallback: Whether to use public search provider when API keys are not set.
 
     Returns:
         Dictionary containing metric counters, queries used, and discovered leads.
 
     Raises:
         ValueError: If product keyword is empty.
-        ConfigurationRequiredError: If live mode is requested without API credentials.
+        ConfigurationRequiredError: If live mode is requested without API credentials and fallback disabled.
     """
     clean_product = (product or "").strip()
     if not clean_product:
@@ -80,13 +82,16 @@ def run_discovery_pipeline(
     errors: List[str] = []
 
     # 2. Execute Web Searches via legitimate API adapter
-    # If live mode without API keys, raise immediately before partial execution
+    # If live mode without API keys, check if public search fallback is allowed
     if not is_test and not adapter.is_configured():
-        raise ConfigurationRequiredError(
-            "Search API configuration required for live lead discovery. "
-            "Please configure SEARCH_API_KEY & SEARCH_ENGINE_ID (or SERPAPI_API_KEY) in your .env file. "
-            "To test offline without API keys, enable TEST_MODE=true."
-        )
+        if allow_public_fallback:
+            adapter = SearchAPIAdapter(provider="public")
+        else:
+            raise ConfigurationRequiredError(
+                "Search API configuration required for live lead discovery. "
+                "Please configure SEARCH_API_KEY & SEARCH_ENGINE_ID (or SERPAPI_API_KEY) in your .env file. "
+                "To test offline without API keys, enable TEST_MODE=true."
+            )
 
     for q in queries:
         if len(raw_results_collected) >= min(max_results * 2, 24):

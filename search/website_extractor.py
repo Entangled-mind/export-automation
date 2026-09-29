@@ -41,17 +41,24 @@ PLACEHOLDER_EMAIL_PATTERNS = [
     "contact@domain",
 ]
 
-# Buyer intent & commercial keywords for relevance validation
+# Buyer intent & commercial keywords for relevance validation across all products
 BUYER_INTENT_EVIDENCE = [
     "importer", "imports", "distributor", "distribution", "wholesaler", "wholesale",
     "retailer", "retail", "procurement", "purchasing", "buyer", "buyers",
     "sourcing", "reseller", "resale", "stockist", "trading company", "b2b",
     "department store", "furniture store", "home decor store", "gift shop", "boutique",
+    "store", "shop", "dealer", "merchant", "outlet", "showroom", "commercial",
+    "enterprise", "trade", "products", "solutions", "catalog", "order", "inquiries",
+    "sales", "contact us", "business", "supply", "supplies", "supermarket",
+    "distributors", "wholesalers", "retailers", "importers",
 ]
 
 DIRECT_BUYER_EVIDENCE = (
-    "importer", "imports", "distributor", "procurement", "purchasing", "buyer",
-    "sourcing", "reseller", "stockist",
+    "importer", "imports", "importers", "distributor", "distributors",
+    "procurement", "purchasing", "buyer", "buyers", "sourcing", "reseller",
+    "resellers", "stockist", "stockists", "wholesale", "wholesaler",
+    "wholesalers", "retailer", "retailers", "dealer", "dealers",
+    "merchant", "merchants", "trading company", "store", "shop", "b2b",
 )
 SUPPLIER_EVIDENCE = (
     "manufacturer", "manufacturing", "exporter", "supplier", "our factory",

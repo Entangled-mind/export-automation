@@ -4,8 +4,10 @@ from .email_sender import (
     OutreachResult,
     OutreachStatistics,
     build_mime_message,
+    save_email_credentials,
     send_batch_outreach,
     send_single_email,
+    test_smtp_credentials,
 )
 from .rate_limiter import can_send_today, get_today_sent_count
 from .template_manager import (
@@ -19,6 +21,8 @@ from .template_manager import (
 
 __all__ = [
     "send_single_email",
+    "test_smtp_credentials",
+    "save_email_credentials",
     "send_batch_outreach",
     "build_mime_message",
     "OutreachResult",

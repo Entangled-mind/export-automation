@@ -18,6 +18,7 @@ from email.mime.text import MIMEText
 import os
 from pathlib import Path
 import smtplib
+import socket
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -273,14 +274,49 @@ def send_single_email(
 
     # LIVE GMAIL SMTP TRANSMISSION
     try:
-        if config.USE_SSL:
-            server = smtplib.SMTP_SSL(config.SMTP_HOST, config.SMTP_PORT, timeout=15)
-        else:
-            server = smtplib.SMTP(config.SMTP_HOST, config.SMTP_PORT, timeout=15)
-            server.starttls()
+        clean_pwd = config.GMAIL_APP_PASSWORD.replace(" ", "").strip()
+        ports_to_try = (
+            [(config.SMTP_PORT, config.USE_SSL), (465, True), (587, False)]
+            if config.USE_SSL or config.SMTP_PORT == 465
+            else [(config.SMTP_PORT, config.USE_SSL), (587, False), (465, True)]
+        )
 
-        server.login(config.GMAIL_EMAIL, config.GMAIL_APP_PASSWORD)
-        server.sendmail(config.GMAIL_EMAIL, [email], mime_msg.as_string())
+        # Deduplicate ports list while preserving order
+        unique_ports = []
+        for p, s in ports_to_try:
+            if (p, s) not in unique_ports:
+                unique_ports.append((p, s))
+
+        server = None
+        last_exception = None
+        for port, use_ssl in unique_ports:
+            try:
+                if use_ssl:
+                    server = smtplib.SMTP_SSL(config.SMTP_HOST, port, timeout=15)
+                else:
+                    server = smtplib.SMTP(config.SMTP_HOST, port, timeout=15)
+                    server.starttls()
+                server.login(config.GMAIL_EMAIL.strip(), clean_pwd)
+                break
+            except smtplib.SMTPAuthenticationError as auth_err:
+                last_exception = auth_err
+                break  # Don't retry another port if credentials are bad
+            except Exception as conn_err:
+                last_exception = conn_err
+                err_str = str(conn_err).lower()
+                # If it's an authentication error, stop immediately without trying other ports
+                if "authentication failed" in err_str or "535" in err_str or "badcredentials" in err_str:
+                    break
+                # Only retry other ports for network/socket connection errors
+                if not isinstance(conn_err, (socket.error, OSError, TimeoutError, ConnectionError)):
+                    break
+                server = None
+                continue
+
+        if not server:
+            raise last_exception or RuntimeError("Could not connect to Gmail SMTP server.")
+
+        server.sendmail(config.GMAIL_EMAIL.strip(), [email], mime_msg.as_string())
         server.quit()
 
         log_sent_entry(email, "SUCCESS", sent_log_path)
@@ -304,6 +340,10 @@ def send_single_email(
             failure_message = (
                 "Windows blocked this app's SMTP connection (WinError 10013). "
                 "The email was not sent; open the prepared email in your mail app to send it."
+            )
+        elif isinstance(e, smtplib.SMTPAuthenticationError):
+            failure_message = (
+                "Gmail authentication failed (BadCredentials). Check your 16-character Google App Password in settings."
             )
         else:
             failure_message = f"SMTP transmission failure: {error_text}"
@@ -377,3 +417,118 @@ def send_batch_outreach(
             time.sleep(delay_seconds)
 
     return results, stats
+
+
+def test_smtp_credentials(
+    email: Optional[str] = None,
+    password: Optional[str] = None,
+    host: Optional[str] = None,
+) -> Tuple[bool, str]:
+    """Test connection and authentication with Gmail SMTP server.
+
+    Returns:
+        (is_authenticated: bool, status_message: str)
+    """
+    target_email = (email if email is not None else (config.GMAIL_EMAIL or "")).strip()
+    target_pwd = (password if password is not None else (config.GMAIL_APP_PASSWORD or "")).strip()
+    target_host = host or config.SMTP_HOST
+
+    if not target_email:
+        return False, "Gmail address is not provided."
+    if not target_pwd or target_pwd == "your_16_character_app_password":
+        return False, "Google App Password is not set or is still the default placeholder."
+
+    clean_pwd = target_pwd.replace(" ", "").strip()
+    ports_to_try = [(465, True), (587, False)]
+    last_err = ""
+
+    for port, use_ssl in ports_to_try:
+        try:
+            if use_ssl:
+                server = smtplib.SMTP_SSL(target_host, port, timeout=10)
+            else:
+                server = smtplib.SMTP(target_host, port, timeout=10)
+                server.starttls()
+            server.login(target_email, clean_pwd)
+            server.quit()
+            return True, f"Successfully connected to Gmail as {target_email}!"
+        except smtplib.SMTPAuthenticationError:
+            return (
+                False,
+                "Authentication failed: Google rejected this App Password. "
+                "Ensure you generated a 16-character App Password at myaccount.google.com/apppasswords."
+            )
+        except Exception as e:
+            last_err = str(e)
+            continue
+
+    return False, f"Could not connect to Gmail SMTP: {last_err or 'Connection timed out'}"
+
+
+def save_email_credentials(
+    email: str,
+    password: str,
+    sender_name: Optional[str] = None,
+    sender_company: Optional[str] = None,
+    env_path: Optional[Path] = None,
+) -> bool:
+    """Persist verified Gmail SMTP credentials to .env and runtime config."""
+    clean_email = email.strip()
+    clean_pwd = password.replace(" ", "").strip()
+    target_env = env_path or (config.BASE_DIR / ".env")
+
+    # Update in-memory config immediately
+    config.GMAIL_EMAIL = clean_email
+    config.GMAIL_APP_PASSWORD = clean_pwd
+    config.SMTP_PORT = 465
+    config.USE_SSL = True
+    config.DRY_RUN = False
+    config.TEST_MODE = False
+    if sender_name:
+        config.SENDER_NAME = sender_name.strip()
+    if sender_company:
+        config.SENDER_COMPANY = sender_company.strip()
+
+    # Update .env file on disk
+    try:
+        env_lines = []
+        if target_env.exists():
+            with open(target_env, "r", encoding="utf-8") as f:
+                env_lines = f.readlines()
+
+        keys_updated = {
+            "GMAIL_EMAIL": clean_email,
+            "GMAIL_APP_PASSWORD": clean_pwd,
+            "SMTP_PORT": "465",
+            "USE_SSL": "True",
+            "DRY_RUN": "False",
+            "TEST_MODE": "False",
+        }
+        if sender_name:
+            keys_updated["SENDER_NAME"] = sender_name.strip()
+        if sender_company:
+            keys_updated["SENDER_COMPANY"] = sender_company.strip()
+
+        written_keys = set()
+        new_lines = []
+        for line in env_lines:
+            key_match = False
+            for k, val in keys_updated.items():
+                if line.startswith(f"{k}=") or line.startswith(f"{k} ="):
+                    new_lines.append(f"{k}={val}\n")
+                    written_keys.add(k)
+                    key_match = True
+                    break
+            if not key_match:
+                new_lines.append(line)
+
+        for k, val in keys_updated.items():
+            if k not in written_keys:
+                new_lines.append(f"{k}={val}\n")
+
+        with open(target_env, "w", encoding="utf-8") as f:
+            f.writelines(new_lines)
+        return True
+    except Exception:
+        return False
+

@@ -74,6 +74,8 @@ class SearchAPIAdapter:
 
     def is_configured(self) -> bool:
         """Check whether a credentialed live search API is available."""
+        if self.provider in ("public", "ddgs"):
+            return True
         has_google = bool(self.api_key and self.engine_id)
         has_serpapi = bool(self.serpapi_key)
         return has_google or has_serpapi
@@ -108,6 +110,9 @@ class SearchAPIAdapter:
                 return seeded
             return []
 
+        if self.provider in ("public", "ddgs"):
+            return self._search_public(query=query, max_results=max_results)
+
         if not self.is_configured():
             raise ConfigurationRequiredError(
                 "Search API credentials not configured for live production mode.\n"
@@ -121,6 +126,49 @@ class SearchAPIAdapter:
             return self._search_serpapi(query=query, max_results=max_results)
         else:
             return self._search_google_custom_search(query=query, max_results=max_results)
+
+    def _search_public(self, query: str, max_results: int = 10) -> List[Dict[str, str]]:
+        """Execute a search query using public web search engine (ddgs)."""
+        num = min(max(1, max_results), 15)
+        results: List[Dict[str, str]] = []
+        try:
+            from ddgs import DDGS
+            with DDGS() as ddgs:
+                raw_results = list(ddgs.text(query, max_results=num))
+                for item in raw_results:
+                    href = (item.get("href") or "").strip()
+                    title = (item.get("title") or "").strip()
+                    body = (item.get("body") or "").strip()
+                    if href and title:
+                        results.append({
+                            "title": title,
+                            "url": href,
+                            "snippet": body,
+                        })
+                if results:
+                    return results
+        except Exception:
+            pass
+
+        try:
+            from duckduckgo_search import DDGS
+            with DDGS() as ddgs:
+                raw_results = list(ddgs.text(query, max_results=num))
+                for item in raw_results:
+                    href = (item.get("href") or "").strip()
+                    title = (item.get("title") or "").strip()
+                    body = (item.get("body") or "").strip()
+                    if href and title:
+                        results.append({
+                            "title": title,
+                            "url": href,
+                            "snippet": body,
+                        })
+                return results
+        except Exception:
+            pass
+
+        return results
 
     def _search_google_custom_search(self, query: str, max_results: int = 10) -> List[Dict[str, str]]:
         """Execute a search query using Google Custom Search JSON API."""
