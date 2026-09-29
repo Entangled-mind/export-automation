@@ -85,6 +85,8 @@ def get_dashboard_stats() -> Dict[str, Any]:
     Returns:
         Dictionary containing counts, priority tier breakdowns, countries, and sources.
     """
+    from seed_real_world_data import ensure_real_data_loaded
+    ensure_real_data_loaded()
     try:
         init_database()
         db_stats = get_database_stats()
@@ -254,6 +256,52 @@ class DashboardRequestHandler(BaseHTTPRequestHandler):
                 "database": db_stats,
             })
 
+        elif parsed.path == "/api/send-email":
+            body = self.read_json_body()
+            email = (body.get("email") or "").strip()
+            if not is_valid_email(email):
+                self.send_json(
+                    {"status": "error", "message": "Enter a valid recipient email address."},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
+
+            buyer_name = (body.get("buyer_name") or "").strip()
+            greeting = f"Hello {buyer_name}," if buyer_name else "Hello,"
+            subject = "Handcrafted Home Decor from ResonaCraft"
+            message = (
+                f"{greeting}\n\n"
+                "I'm reaching out from ResonaCraft to introduce our home decor collection, "
+                "including decorative singing bowls, handmade rugs, lanterns, and home textiles.\n\n"
+                "If you'd like to learn more, reply and we'll share product details, availability, "
+                "and wholesale pricing.\n\n"
+                "Best,\n"
+                "ResonaCraft Global"
+            )
+            result = send_single_email(
+                {
+                    "email": email,
+                    "buyer_name": buyer_name,
+                    "company_name": (body.get("company_name") or "").strip(),
+                    "tier": TIER_1,
+                    "outreach_angle": "Handcrafted home decor for retail and wholesale buyers.",
+                },
+                dry_run=False,
+                test_mode=False,
+                subject_override=subject,
+                body_text_override=message,
+                sender_name="ResonaCraft Global",
+            )
+            sent = result.status == "SUCCESS"
+            self.send_json(
+                {
+                    "status": "success" if sent else "error",
+                    "message": result.message,
+                    "result": result.to_dict(),
+                },
+                status=HTTPStatus.OK if sent else HTTPStatus.BAD_REQUEST,
+            )
+
         elif parsed.path == "/api/test-email":
             body = self.read_json_body()
             email = body.get("email", "")
@@ -327,7 +375,6 @@ class DashboardRequestHandler(BaseHTTPRequestHandler):
                 reasoning=res.reasoning,
                 source=res.source,
             )
-
             log_activity(
                 event="MANUAL_LEAD_ADDED",
                 email=email,
@@ -343,6 +390,55 @@ class DashboardRequestHandler(BaseHTTPRequestHandler):
                 "intent_score": res.intent_score,
                 "outreach_angle": res.outreach_angle,
             })
+
+        elif parsed.path == "/api/find-buyers":
+            body = self.read_json_body()
+            product_value = body.get("product", "")
+            raw_products = body.get("products") or product_value
+            country = body.get("country", "").strip() or None
+            try:
+                max_results = int(body.get("max_results", 20))
+            except ValueError:
+                max_results = 20
+            test_mode = body.get("test_mode", None)
+
+            try:
+                from search.lead_pipeline import run_multi_product_search, run_discovery_pipeline
+
+                if isinstance(raw_products, list) and raw_products:
+                    results = run_multi_product_search(
+                        products=raw_products,
+                        country=country,
+                        max_results_per_product=max_results,
+                        test_mode=test_mode,
+                        save_to_db=True,
+                    )
+                elif isinstance(product_value, str) and "," in product_value:
+                    results = run_multi_product_search(
+                        products=product_value,
+                        country=country,
+                        max_results_per_product=max_results,
+                        test_mode=test_mode,
+                        save_to_db=True,
+                    )
+                else:
+                    results = run_discovery_pipeline(
+                        product=str(product_value).strip(),
+                        country=country,
+                        max_results=max_results,
+                        test_mode=test_mode,
+                        save_to_db=True,
+                    )
+
+                self.send_json({
+                    "status": "success",
+                    "data": results,
+                })
+            except Exception as e:
+                self.send_json({
+                    "status": "error",
+                    "message": str(e),
+                }, status=HTTPStatus.BAD_REQUEST)
 
         elif parsed.path == "/api/simulate-outreach":
             # Simulate sending to uncontacted B2B buyers

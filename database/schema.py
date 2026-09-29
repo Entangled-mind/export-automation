@@ -14,7 +14,7 @@ import config
 from database.connection import db_session
 
 SCHEMA_DDL = """
--- 1. Master Buyers Table
+-- 1. Master Buyers Table (Supports both Phase 2 cataloging and Dynamic Search Discovery)
 CREATE TABLE IF NOT EXISTS buyers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     buyer_name TEXT,
@@ -23,6 +23,10 @@ CREATE TABLE IF NOT EXISTS buyers (
     website TEXT,
     country TEXT,
     source_platform TEXT,
+    source_url TEXT,
+    search_query TEXT,
+    product TEXT,
+    validation_status TEXT DEFAULT 'VALID',
     quality_status TEXT DEFAULT 'VALID',
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
@@ -79,7 +83,8 @@ CREATE INDEX IF NOT EXISTS idx_activity_timestamp ON activity_logs(timestamp);
 
 
 def init_database(db_path: Optional[Path] = None) -> Path:
-    """Execute DDL statements to initialize all database tables and indices.
+    """Execute DDL statements to initialize all database tables and indices,
+    and safely migrate schema columns for existing databases.
 
     Args:
         db_path: Optional custom path to SQLite database. Defaults to config.DB_PATH.
@@ -90,4 +95,23 @@ def init_database(db_path: Optional[Path] = None) -> Path:
     path = db_path if db_path is not None else config.DB_PATH
     with db_session(path) as conn:
         conn.executescript(SCHEMA_DDL)
+
+        # Idempotent Column Migrations for pre-existing databases
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(buyers);")
+        existing_cols = {row[1].lower() for row in cursor.fetchall()}
+
+        if "source_url" not in existing_cols:
+            cursor.execute("ALTER TABLE buyers ADD COLUMN source_url TEXT;")
+        if "search_query" not in existing_cols:
+            cursor.execute("ALTER TABLE buyers ADD COLUMN search_query TEXT;")
+        if "product" not in existing_cols:
+            cursor.execute("ALTER TABLE buyers ADD COLUMN product TEXT;")
+        if "validation_status" not in existing_cols:
+            cursor.execute("ALTER TABLE buyers ADD COLUMN validation_status TEXT DEFAULT 'VALID';")
+
+        # Create indices on new columns after ensuring columns exist
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_buyers_product ON buyers(product);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_buyers_validation_status ON buyers(validation_status);")
+
     return path

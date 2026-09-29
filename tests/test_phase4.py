@@ -248,9 +248,15 @@ class TestLiveSmtpDispatch(unittest.TestCase):
                         test_mode=False,
                         sent_log_path=self.sent_log,
                         activity_log_path=self.activity_log,
+                        subject_override="Home Decor Introduction",
+                        body_text_override="A note about our home decor collection.",
+                        sender_name="ResonaCraft Global",
                     )
                     self.assertEqual(result.status, "SUCCESS")
                     mock_server.sendmail.assert_called_once()
+                    sent_message = mock_server.sendmail.call_args.args[2]
+                    self.assertIn("Subject: Home Decor Introduction", sent_message)
+                    self.assertIn("From: ResonaCraft Global <test@gmail.com>", sent_message)
                     mock_server.quit.assert_called_once()
 
     @patch("smtplib.SMTP_SSL")

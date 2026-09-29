@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResonaCraft Global — B2B Himalayan Export Trade Engine</title>
+    <title>ResonaCraft | Find Buyers</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-base: #070a13;
-            --bg-sidebar: #0b1120;
-            --bg-card: #111a2e;
-            --bg-card-hover: #16223b;
-            --bg-input: #17233d;
-            --border-subtle: #1c2a47;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --text-faint: #64748b;
-            --accent-indigo: #6366f1;
+            --bg-base: #fff7f3;
+            --bg-sidebar: #fffdfb;
+            --bg-card: #ffffff;
+            --bg-card-hover: #fff0eb;
+            --bg-input: #fffdfc;
+            --border-subtle: #f0ddd7;
+            --text-main: #392d33;
+            --text-muted: #76666b;
+            --text-faint: #9b898f;
+            --accent-indigo: #cf6c62;
             --accent-emerald: #10b981;
             --accent-sky: #0ea5e9;
             --accent-amber: #f59e0b;
@@ -119,6 +119,38 @@
         .close-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
         #notification { position: fixed; bottom: 24px; right: 24px; padding: 14px 22px; background: #18223c; border: 1px solid var(--accent-indigo); border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,0.6); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 9999; }
         #notification.show { transform: translateY(0); opacity: 1; }
+
+        body { background: #fff7f3; color: var(--text-main); }
+        aside.sidebar, header.top-header { background: #fffdfb; }
+        .btn-primary { background: linear-gradient(135deg, #d87464, #bd617e); box-shadow: 0 4px 12px rgba(189, 97, 126, 0.22); }
+        .nav-item button.active, .pill-btn.active { background: #c76872; border-color: #c76872; color: #fff; }
+        .stepper-panel, .kpi-card, .chart-box, .lab-card, .table-wrap, .modal-box { background: #fff; }
+        .stage-box { background: #fff9f6; }
+        th { background: #fff2ed; color: #725f65; }
+        td { color: #51434a; }
+        .input-field, #product-search-filter, .picker-trigger, select { color: #392d33 !important; }
+        .product-picker { position: relative; }
+        .picker-trigger { width: 100%; min-height: 40px; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 13px; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; text-align: left; }
+        .picker-trigger:hover, .picker-trigger:focus-visible { border-color: #cf6c82; outline: none; }
+        .picker-menu { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30; padding: 10px; background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: 0 12px 28px rgba(75, 45, 55, 0.16); }
+        .product-picker.open .picker-menu { display: block; }
+        #product-search-filter { width: 100%; background: #fffaf8; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 9px 10px; color: var(--text-main); font-size: 13px; margin-bottom: 8px; }
+        #preset-products { display: flex; flex-direction: column; gap: 2px; max-height: 230px; overflow-y: auto; }
+        #preset-products button { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--text-main); text-align: left; cursor: pointer; }
+        #preset-products button:hover { background: #fff0eb; }
+        .dropdown-select { width: 100%; background: #fffdfc; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 9px 13px; color: var(--text-main); font-size: 13px; }
+        .discovery-heading { margin-bottom: 18px; }
+        .discovery-heading h2 { font-size: 22px; color: var(--text-main); }
+        .discovery-heading p { margin-top: 4px; color: var(--text-muted); font-size: 13px; }
+        .discovery-controls { display: grid; grid-template-columns: minmax(230px, 2fr) minmax(170px, 1fr) 140px auto; align-items: end; gap: 12px; margin-bottom: 22px; padding: 18px; background: #fff; border: 1px solid var(--border-subtle); border-radius: 10px; }
+        .discovery-controls label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .table-heading { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border-subtle); }
+        .table-heading h3 { font-size: 14px; color: var(--text-main); }
+        .empty-state { padding: 25px; text-align: center; color: var(--text-faint); }
+        .email-link { color: #a34d72; font-family: 'JetBrains Mono', monospace; text-decoration: none; }
+        .email-link:hover { text-decoration: underline; }
+        #outreach-view > div:first-child { display: none !important; }
+        @media (max-width: 768px) { .picker-menu { position: fixed; left: 12px; right: 12px; top: auto; max-height: 50vh; } }
 
         .mobile-menu-btn { display: none; }
         .sidebar-overlay { display: none; }
@@ -228,6 +260,8 @@
             .kpi-badge { top: 10px; right: 10px; font-size: 9px; padding: 2px 6px; }
 
             .charts-row { grid-template-columns: 1fr; gap: 14px; }
+            .discovery-controls { grid-template-columns: 1fr; }
+            .discovery-controls > button { width: 100%; justify-content: center; }
             .chart-box { padding: 14px; }
             .lab-grid { grid-template-columns: 1fr; gap: 14px; }
             .lab-card { padding: 16px; gap: 10px; }
@@ -275,28 +309,11 @@
         <div class="nav-section">
             <div class="nav-section-title">Navigation Views</div>
             <ul class="nav-list">
-                <li class="nav-item"><button class="active" onclick="showView('overview-view', this)">📊 Executive Overview</button></li>
-                <li class="nav-item"><button onclick="showView('b2b-view', this)">🏢 B2B Wholesale Targets <span class="nav-badge" id="badge-b2b">0</span></button></li>
-                <li class="nav-item"><button onclick="showView('b2c-view', this)">🧘 B2C Retail Inquiries <span class="nav-badge" id="badge-b2c">0</span></button></li>
-                <li class="nav-item"><button onclick="showView('master-view', this)">📁 Master Directory <span class="nav-badge" id="badge-master">0</span></button></li>
-                <li class="nav-item"><button onclick="showView('lab-view', this)">🧪 Quality & AI Lab</button></li>
-                <li class="nav-item"><button onclick="showView('outreach-view', this)">📨 Outreach Engine <span class="nav-badge" id="badge-sent">0</span></button></li>
-                <li class="nav-item"><button onclick="showView('catalog-view', this)">📦 Product Catalog</button></li>
-                <li class="nav-item"><button onclick="showView('audit-view', this)">📜 Live Audit Trail</button></li>
+                <li class="nav-item"><button class="active" onclick="showView('discovery-view', this)">🔎 Find Buyers</button></li>
+                <li class="nav-item"><button onclick="showView('analytics-view', this)">📈 Analytics</button></li>
+                <li class="nav-item"><button onclick="showView('master-view', this)">👥 Buyer Directory <span class="nav-badge" id="badge-master">0</span></button></li>
+                <li class="nav-item"><button onclick="showView('outreach-view', this)">✉ Email History <span class="nav-badge" id="badge-sent">0</span></button></li>
             </ul>
-        </div>
-        <div class="sidebar-footer">
-            <div class="status-pill" style="margin-bottom: 8px;">
-                <div class="pulse-dot"></div>
-                <div>
-                    <span style="color: #fff; font-weight: 700;">Live Trade Engine</span>
-                    <div style="font-size: 10px; color: var(--text-faint);">Console v2.4 • IEC 0524099231</div>
-                </div>
-            </div>
-            <div style="padding: 7px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 6px; font-size: 10px; color: var(--text-muted); line-height: 1.4;">
-                <span style="color: #a5b4fc; font-weight: 700;">Solo Founder & CEO:</span> Priyanshu Sharma<br>
-                <span style="color: var(--text-faint);">Kathmandu Valley & Bengaluru HQ</span>
-            </div>
         </div>
     </aside>
 
@@ -304,119 +321,67 @@
         <header class="top-header">
             <div class="header-title-box">
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <h1 id="page-title">ResonaCraft Global — B2B Export Console</h1>
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;">OPERATIONAL STARTUP</span>
+                    <h1 id="page-title">Find Buyers</h1>
                 </div>
-                <p>Himalayan Handcrafted Singing Bowls & Acoustic Instruments • Autonomous B2B Lead Intelligence, AI Tiering & Outreach</p>
+                <p>Discover qualified buyers and contact them directly.</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-secondary" onclick="openAddModal()">➕ Add Lead</button>
-                <button class="btn btn-success" onclick="simulateOutreach()">🚀 Dispatch Outreach</button>
-                <button class="btn btn-primary" onclick="triggerPipeline()">⚡ Run Discovery Pipeline</button>
-                <button class="btn btn-secondary" onclick="exportData('buyers.csv')">📥 Export CSV</button>
-                <button class="btn btn-danger" onclick="resetDemo()">🧹 Reset Demo</button>
+                <button class="btn btn-secondary" onclick="openAddModal()">➕ Add Buyer</button>
             </div>
         </header>
 
         <div class="workspace">
-            <!-- STARTUP CREDENTIALS & TRADE COMPLIANCE STRIP -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; background: rgba(17, 26, 46, 0.7); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 18px; font-size: 11px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 16px;">📜</span>
-                    <div><b style="color: #fff;">Registered Entity:</b> <span style="color: var(--text-muted);">ResonaCraft Artisans Pvt. Ltd.</span></div>
+            <div id="discovery-view" class="view-panel active">
+                <div class="discovery-heading">
+                    <h2>Find potential buyers</h2>
+                    <p>Choose a product and target market to search for businesses and contacts.</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 16px;">🌍</span>
-                    <div><b style="color: #fff;">Export Logistics:</b> <span style="color: var(--text-muted);">FOB Kolkata / Air Cargo TIA (Incoterms 2020)</span></div>
+                <div class="discovery-controls">
+                    <div>
+                        <label>Products</label>
+                        <div class="product-picker" id="product-picker">
+                            <input type="hidden" id="discovery-product" value="">
+                            <button type="button" class="picker-trigger" id="product-picker-trigger" aria-expanded="false" aria-controls="product-picker-menu"><span id="product-picker-label">Select products</span><span>⌄</span></button>
+                            <div class="picker-menu" id="product-picker-menu">
+                                <input id="product-search-filter" type="text" placeholder="Search products..." aria-label="Search products">
+                                <div id="preset-products" role="listbox" aria-label="Product options"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="discovery-country">Country</label>
+                        <select id="discovery-country" class="dropdown-select">
+                            <option value="">All countries</option><option>Australia</option><option>Austria</option><option>Canada</option><option>France</option><option>Germany</option><option>India</option><option>Japan</option><option value="UK">United Kingdom</option><option value="USA">United States</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="discovery-limit">Maximum buyers</label>
+                        <select id="discovery-limit" class="dropdown-select"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option><option value="30">30</option></select>
+                    </div>
+                    <button class="btn btn-primary" id="btn-find-buyers" onclick="executeDynamicDiscovery()">🔍 Find Buyers</button>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 16px;">🏆</span>
-                    <div><b style="color: #fff;">Certifications:</b> <span style="color: var(--text-muted);">ISO 9001:2015 • Fair Trade Himalayan Guild</span></div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 16px;">🛡️</span>
-                    <div><b style="color: #fff;">Material Standard:</b> <span style="color: #34d399; font-weight: 700;">7-Metal Sacred Bronze (Cu-Sn 78/22)</span></div>
+                <div class="table-wrap">
+                    <div class="table-heading"><h3>Buyer results</h3><span id="discovery-table-count">Search for buyers to see results</span></div>
+                    <table>
+                        <thead><tr><th>Company</th><th>Contact</th><th>Email</th><th>Website</th><th>Country</th><th>Action</th></tr></thead>
+                        <tbody id="discovery-tbody"><tr><td colspan="6" class="empty-state">Choose a product and click Find Buyers.</td></tr></tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="stepper-panel">
-                <div class="stepper-header">
-                    <span class="stepper-label">Automated Export Pipeline Stepper</span>
-                    <span id="stepper-status" style="font-size: 11px; font-weight: 700; color: var(--accent-sky);">Status: Pipeline Ready</span>
-                </div>
-                <div class="stepper-stages">
-                    <div class="stage-box completed"><span class="stage-num">1</span><div class="stage-info"><span class="stage-title">Discovery</span><span class="stage-sub">Web & Directories</span></div></div>
-                    <div class="stage-box completed"><span class="stage-num">2</span><div class="stage-info"><span class="stage-title">Normalize</span><span class="stage-sub">Clean Whitespace</span></div></div>
-                    <div class="stage-box completed"><span class="stage-num">3</span><div class="stage-info"><span class="stage-title">Validation</span><span class="stage-sub">RFC Syntax & Domain</span></div></div>
-                    <div class="stage-box completed"><span class="stage-num">4</span><div class="stage-info"><span class="stage-title">Duplicate Shield</span><span class="stage-sub">Master & Sent Log</span></div></div>
-                    <div class="stage-box completed"><span class="stage-num">5</span><div class="stage-info"><span class="stage-title">AI Classifier</span><span class="stage-sub">B2B vs B2C Segregation</span></div></div>
-                    <div class="stage-box completed"><span class="stage-num">6</span><div class="stage-info"><span class="stage-title">Outreach Ready</span><span class="stage-sub">Priority Proposal Queue</span></div></div>
-                </div>
-            </div>
-
-            <div class="kpi-row">
-                <div class="kpi-card">
-                    <span class="kpi-badge tag-info">Master</span>
-                    <span class="kpi-title">Verified Master Leads</span>
-                    <span class="kpi-num" id="kpi-total">0</span>
-                    <span class="kpi-meta"><span>📁</span> Cataloged in buyers.csv</span>
-                </div>
-                <div class="kpi-card">
-                    <span class="kpi-badge tag-b2b">Wholesale</span>
-                    <span class="kpi-title">B2B Commercial Targets</span>
-                    <span class="kpi-num" style="color: #60a5fa;" id="kpi-b2b">0</span>
-                    <span class="kpi-meta"><span>🏢</span> Studios, Spas & Wholesalers</span>
-                </div>
-                <div class="kpi-card">
-                    <span class="kpi-badge tag-b2c">Consumer</span>
-                    <span class="kpi-title">B2C Retail Contacts</span>
-                    <span class="kpi-num" style="color: #c084fc;" id="kpi-b2c">0</span>
-                    <span class="kpi-meta"><span>🧘</span> Individual Sound Healers</span>
-                </div>
-                <div class="kpi-card">
-                    <span class="kpi-badge tag-success">Outreach</span>
-                    <span class="kpi-title">Outreach Dispatched</span>
-                    <span class="kpi-num" style="color: #34d399;" id="kpi-sent">0</span>
-                    <span class="kpi-meta"><span>📨</span> Logged in sent_log.csv</span>
-                </div>
-                <div class="kpi-card">
-                    <span class="kpi-badge tag-warning">Audited</span>
-                    <span class="kpi-title">Traceable Operations</span>
-                    <span class="kpi-num" style="color: #fbbf24;" id="kpi-logs">0</span>
-                    <span class="kpi-meta"><span>📜</span> Stored in activity_log.csv</span>
-                </div>
-            </div>
-            <!-- VIEW 1: EXECUTIVE OVERVIEW -->
-            <div id="overview-view" class="view-panel active">
+            <div id="analytics-view" class="view-panel">
                 <div class="charts-row">
                     <div class="chart-box">
-                        <div class="chart-heading"><span>B2B vs B2C Ratio</span><span style="font-size: 11px; color: var(--text-faint);">AI Segregation</span></div>
-                        <div style="position: relative; height: 210px; display: flex; justify-content: center;"><canvas id="pieB2B"></canvas></div>
+                        <div class="chart-heading"><span>B2B vs B2C Ratio</span><span style="font-size: 11px; color: var(--text-faint);">Lead Mix</span></div>
+                        <div style="position: relative; height: 260px; display: flex; justify-content: center;"><canvas id="pieB2B"></canvas></div>
                     </div>
                     <div class="chart-box">
-                        <div class="chart-heading"><span>Top Target Export Markets</span><span style="font-size: 11px; color: var(--text-faint);">By Destination</span></div>
-                        <div style="position: relative; height: 210px;"><canvas id="barCountries"></canvas></div>
+                        <div class="chart-heading"><span>Target Markets</span><span style="font-size: 11px; color: var(--text-faint);">By Country</span></div>
+                        <div style="position: relative; height: 260px;"><canvas id="barCountries"></canvas></div>
                     </div>
                     <div class="chart-box">
-                        <div class="chart-heading"><span>Discovery Channel Breakdown</span><span style="font-size: 11px; color: var(--text-faint);">Lead Sources</span></div>
-                        <div style="position: relative; height: 210px; display: flex; justify-content: center;"><canvas id="pieSources"></canvas></div>
-                    </div>
-                </div>
-
-                <div style="margin-top: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                        <h3 style="font-size: 15px; font-weight: 700;">🌟 Priority B2B Wholesale Targets</h3>
-                        <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="showView('b2b-view', document.querySelectorAll('.nav-item button')[1])">View Full B2B Pipeline ➔</button>
-                    </div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>Action</th><th>Buyer Name</th><th>Company / Studio</th><th>Email</th><th>Country</th><th>AI Rationale</th></tr>
-                            </thead>
-                            <tbody id="overview-b2b-tbody">
-                                <tr><td colspan="6" style="text-align: center; color: var(--text-faint);">Loading priority leads...</td></tr>
-                            </tbody>
-                        </table>
+                        <div class="chart-heading"><span>Discovery Channels</span><span style="font-size: 11px; color: var(--text-faint);">Lead Sources</span></div>
+                        <div style="position: relative; height: 260px; display: flex; justify-content: center;"><canvas id="pieSources"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -435,7 +400,7 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Action</th><th>Buyer Name</th><th>Company / Studio</th><th>Verified Email</th><th>Website</th><th>Country</th><th>AI Classification & Rationale</th></tr>
+                            <tr><th>Action</th><th>Buyer Name</th><th>Company / Studio</th><th>Verified Email</th><th>Send Mail</th><th>Website</th><th>Country</th><th>AI Classification & Rationale</th></tr>
                         </thead>
                         <tbody id="b2b-full-tbody">
                             <tr><td colspan="7" style="text-align: center; color: var(--text-faint);">Loading B2B wholesale database...</td></tr>
@@ -463,7 +428,7 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Buyer Name</th><th>Company</th><th>Email</th><th>Website</th><th>Country</th><th>Source Platform</th></tr>
+                            <tr><th>Buyer Name</th><th>Company</th><th>Email</th><th>Send Mail</th><th>Website</th><th>Country</th><th>Source Platform</th></tr>
                         </thead>
                         <tbody id="master-full-tbody">
                             <tr><td colspan="6" style="text-align: center; color: var(--text-faint);">Loading master directory...</td></tr>
@@ -542,7 +507,7 @@
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Target Email</th><th>Outreach Result</th><th>Timestamp</th></tr></thead>
-                        <tbody id="sent-full-tbody"><tr><td colspan="3" style="text-align: center; color: var(--text-faint);">Loading sent history...</td></tr></tbody>
+                        <tbody id="sent-full-tbody"><tr><td colspan="3" class="empty-state">Loading sent email history...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -650,14 +615,6 @@
                 <button class="close-btn" onclick="closeAddModal()">&times;</button>
             </div>
             
-            <div style="background: rgba(99, 102, 241, 0.08); border: 1px dashed rgba(99, 102, 241, 0.35); border-radius: 8px; padding: 12px;">
-                <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; text-transform: uppercase; margin-bottom: 8px;">⚡ Quick Fill Presets (Instant Demo Setup)</div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary" style="font-size: 11px; padding: 6px 12px;" onclick="quickFillB2B()">🏢 B2B Wholesale Preset</button>
-                    <button class="btn btn-secondary" style="font-size: 11px; padding: 6px 12px;" onclick="quickFillB2C()">🧘 B2C Individual Preset</button>
-                </div>
-            </div>
-
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
                     <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Buyer / Contact Name *</label>
@@ -681,7 +638,9 @@
                     </div>
                     <div>
                         <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Country</label>
-                        <input type="text" id="m-country" class="input-field" style="width: 100%; margin-top: 4px;" placeholder="e.g. Germany">
+                        <select id="m-country" class="input-field dropdown-select" style="width: 100%; margin-top: 4px;">
+                            <option value="">Select country</option><option>Australia</option><option>Austria</option><option>Canada</option><option>France</option><option>Germany</option><option>India</option><option>Japan</option><option>Nepal</option><option>United Kingdom</option><option>United States</option>
+                        </select>
                     </div>
                 </div>
                 <div>
@@ -738,11 +697,146 @@
         let chartSource = null;
         let b2bDataCache = [];
 
+        const PRODUCT_PRESETS = [
+            'Decorative Singing Bowls', 'Handmade Rugs', 'Home Textiles', 'Decorative Lanterns',
+            'Himalayan Salt Lamps', 'Scented Candles', 'Decorative Glassware', 'Indoor Plants',
+            'Linen Tablecloths', 'Wall Clocks', 'Decorative Planters', 'Ceramic Vases',
+            'Throw Pillows', 'Wall Art', 'Handmade Tapestries'
+        ].sort((a, b) => a.localeCompare(b));
+
+        function getSelectedProducts() {
+            const input = document.getElementById('discovery-product');
+            if (!input) return [];
+            return [...new Set((input.value || '').split(',').map(v => v.trim()).filter(Boolean))];
+        }
+
+        function setSelectedProducts(products) {
+            const input = document.getElementById('discovery-product');
+            if (!input) return;
+            const selectedProducts = [...new Set(products.map(p => p.trim()).filter(Boolean))];
+            input.value = selectedProducts.join(', ');
+            const label = document.getElementById('product-picker-label');
+            if (label) {
+                label.textContent = selectedProducts.length
+                    ? selectedProducts.join(', ')
+                    : 'Select products';
+            }
+            renderPresetProducts();
+        }
+
+        function toggleProductSelection(product) {
+            const selected = getSelectedProducts();
+            const exists = selected.includes(product);
+            const next = exists ? selected.filter(item => item !== product) : [...selected, product];
+            setSelectedProducts(next);
+            showNotification(exists ? `Removed product: ${product}` : `Selected product: ${product}`);
+        }
+
+        function renderPresetProducts() {
+            const container = document.getElementById('preset-products');
+            const filterInput = document.getElementById('product-search-filter');
+            const selected = new Set(getSelectedProducts());
+            if (!container) return;
+
+            const query = (filterInput ? filterInput.value : '').trim().toLowerCase();
+            const visibleProducts = PRODUCT_PRESETS.filter(product => !query || product.toLowerCase().includes(query));
+
+            container.innerHTML = visibleProducts.map((product) => `
+                <button type="button" role="option" aria-selected="${selected.has(product)}" data-product="${product.replace(/"/g, '&quot;')}">
+                    <span>${product}</span><span aria-hidden="true">${selected.has(product) ? '✓' : ''}</span>
+                </button>
+            `).join('') || '<div style="grid-column: 1 / -1; color: var(--text-faint); font-size: 12px; padding: 8px 0;">No matching products</div>';
+
+            container.querySelectorAll('button[data-product]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    toggleProductSelection(button.dataset.product);
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPresetProducts();
+            const input = document.getElementById('discovery-product');
+            if (input) {
+                input.value = '';
+            }
+
+            const filterInput = document.getElementById('product-search-filter');
+            if (filterInput) {
+                filterInput.addEventListener('input', renderPresetProducts);
+            }
+
+            const picker = document.getElementById('product-picker');
+            const trigger = document.getElementById('product-picker-trigger');
+            if (picker && trigger) {
+                trigger.addEventListener('click', () => {
+                    const isOpen = picker.classList.toggle('open');
+                    trigger.setAttribute('aria-expanded', String(isOpen));
+                    if (isOpen) {
+                        renderPresetProducts();
+                        filterInput.focus();
+                    }
+                });
+                document.addEventListener('click', (event) => {
+                    if (!picker.contains(event.target)) {
+                        picker.classList.remove('open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        picker.classList.remove('open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+
         function showNotification(msg) {
             const notif = document.getElementById("notification");
             notif.innerHTML = msg;
             notif.classList.add("show");
             setTimeout(() => notif.classList.remove("show"), 3500);
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[char]);
+        }
+
+        function encodeEmailData(value) {
+            return encodeURIComponent(value || "").replace(/'/g, "%27");
+        }
+
+        async function sendGeneratedEmail(button) {
+            const email = decodeURIComponent(button.dataset.email || "");
+            const buyerName = decodeURIComponent(button.dataset.buyerName || "");
+            const companyName = decodeURIComponent(button.dataset.companyName || "");
+            if (!confirm(`Send the generated home-decor email to ${email}?`)) return;
+
+            button.disabled = true;
+            try {
+                const response = await fetch("/api/send-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, buyer_name: buyerName, company_name: companyName })
+                });
+                const result = await response.json();
+                if (!response.ok || result.status !== "success") {
+                    throw new Error(result.message || "Email was not sent.");
+                }
+                showNotification(`Email sent to ${email}`);
+                await loadDashboard();
+            } catch (error) {
+                showNotification(`Email not sent: ${error.message}`);
+            } finally {
+                button.disabled = false;
+            }
         }
 
         function showView(viewId, btnEl) {
@@ -754,17 +848,94 @@
             if (btnEl) btnEl.classList.add("active");
 
             const titles = {
-                "overview-view": "EXPORT Automation System — Command Center",
-                "b2b-view": "B2B Wholesale Buyer Pipeline",
-                "b2c-view": "B2C Retail & Individual Inquiries",
-                "master-view": "Master Verified Directory",
-                "lab-view": "Interactive Quality & AI Lab",
-                "outreach-view": "Outreach Dispatch & Volume Simulator",
-                "catalog-view": "Export Product Catalog",
-                "audit-view": "Real-Time System Audit Log"
+                "analytics-view": "Analytics",
+                "discovery-view": "Find Buyers",
+                "master-view": "Buyer Directory",
+                "outreach-view": "Email History"
             };
             const titleEl = document.getElementById("page-title");
             if (titleEl && titles[viewId]) titleEl.innerText = titles[viewId];
+            if (viewId === "analytics-view") {
+                requestAnimationFrame(() => [chartPie, chartBar, chartSource].forEach(chart => chart && chart.resize()));
+            }
+        }
+
+        async function executeDynamicDiscovery() {
+            const rawProductInput = document.getElementById("discovery-product").value.trim();
+            const productList = rawProductInput ? rawProductInput.split(',').map(item => item.trim()).filter(Boolean) : [];
+            const country = document.getElementById("discovery-country").value.trim();
+            const limit = document.getElementById("discovery-limit").value;
+            const btn = document.getElementById("btn-find-buyers");
+
+            if (!productList.length) {
+                showNotification("⚠️ Please enter at least one product keyword!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = "⏳ Searching...";
+            const searchLabel = productList.length > 1 ? productList.join(', ') : productList[0];
+            showNotification(`🔍 Searching B2B buyers for '${searchLabel}'...`);
+
+            try {
+                const resp = await fetch("/api/find-buyers", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ product: rawProductInput, products: productList, country: country, max_results: limit, test_mode: false })
+                });
+                const res = await resp.json();
+
+                if (res.status === "success" && res.data) {
+                    const data = res.data;
+                    const totalLeads = data.all_leads ? data.all_leads.length : (data.leads || []).length;
+                    const tbody = document.getElementById("discovery-tbody");
+                    const leads = data.all_leads || data.leads || [];
+                    document.getElementById("discovery-table-count").innerText = `${totalLeads} leads discovered`;
+
+                    if (leads.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No buyers found for '${searchLabel}'. Try another product or country.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = leads.map(l => {
+                            const company = escapeHtml(l.company_name || '—');
+                            const buyerName = escapeHtml(l.buyer_name || '—');
+                            const email = escapeHtml(l.email || '');
+                            const website = escapeHtml(l.website || '');
+                            const websiteLabel = escapeHtml((l.website || '').replace(/^https?:\/\//, '').slice(0, 30));
+                            const countryName = escapeHtml(l.country || 'Global');
+                            const canSend = !!l.email && l.validation_status === 'VALID' && !l.unverified_search_result;
+                            const verificationNote = l.unverified_search_result
+                                ? '<div style="font-size: 11px; color: #9b6674; margin-top: 3px;">Unverified search result</div>'
+                                : '';
+                            return `
+                                <tr>
+                                    <td><b>${company}</b>${verificationNote}</td>
+                                    <td>${buyerName}</td>
+                                    <td>${email ? `<span class="email-link">${email}</span>` : '—'}</td>
+                                    <td>${website ? `<a href="${website}" target="_blank" rel="noopener" style="color: #a34d72; text-decoration: none;">${websiteLabel}</a>` : '—'}</td>
+                                    <td>${countryName}</td>
+                                    <td>${canSend ? `<button type="button" class="btn btn-primary" data-email="${encodeEmailData(l.email)}" data-buyer-name="${encodeEmailData(l.buyer_name)}" data-company-name="${encodeEmailData(l.company_name)}" onclick="sendGeneratedEmail(this)">✉ Send Email</button>` : 'No verified email'}</td>
+                                </tr>
+                            `;
+                        }).join("");
+                    }
+                    showNotification(`✅ Discovered ${totalLeads} leads for '${searchLabel}'!`);
+                    loadDashboard();
+                } else {
+                    const isMissingSearchConfig = (res.message || "").includes("Search API configuration required");
+                    const message = isMissingSearchConfig
+                        ? "Live buyer search is not configured. Add SEARCH_API_KEY and SEARCH_ENGINE_ID, or SERPAPI_API_KEY, to your local .env file, then restart the dashboard."
+                        : `Search failed: ${res.message || 'Please try again.'}`;
+                    const safeMessage = escapeHtml(message);
+                    document.getElementById("discovery-table-count").innerText = "Search unavailable";
+                    document.getElementById("discovery-tbody").innerHTML = `<tr><td colspan="6" class="empty-state">${safeMessage}</td></tr>`;
+                    showNotification(safeMessage);
+                }
+            } catch (e) {
+                showNotification(`❌ Request error: ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "🔍 Find Buyers";
+            }
         }
 
         function copyToClipboard(text) {
@@ -859,37 +1030,13 @@
                 const res = await fetch("/api/data");
                 const data = await res.json();
 
-                // Counters
-                document.getElementById("kpi-total").innerText = data.stats.total_buyers || 0;
-                document.getElementById("kpi-b2b").innerText = data.stats.b2b_buyers || 0;
-                document.getElementById("kpi-b2c").innerText = data.stats.b2c_buyers || 0;
-                document.getElementById("kpi-sent").innerText = data.stats.sent_count || 0;
-                document.getElementById("kpi-logs").innerText = data.stats.activity_count || 0;
-
-                // Nav Badges
-                document.getElementById("badge-b2b").innerText = data.stats.b2b_buyers || 0;
-                document.getElementById("badge-b2c").innerText = data.stats.b2c_buyers || 0;
                 document.getElementById("badge-master").innerText = data.stats.total_buyers || 0;
                 document.getElementById("badge-sent").innerText = data.stats.sent_count || 0;
 
-                // Outreach Pacing
-                const sentCount = data.stats.sent_count || 0;
-                const limit = data.stats.daily_send_limit || 100;
-                const pct = Math.min(100, Math.round((sentCount / limit) * 100));
-                document.getElementById("outreach-pacing-text").innerText = `${sentCount} / ${limit} Sent Today (${pct}%)`;
-                document.getElementById("outreach-pacing-bar").style.width = `${pct}%`;
-
-                // Render Charts
                 renderCharts(data.stats.b2b_buyers, data.stats.b2c_buyers, data.stats.countries, data.stats.sources);
 
-                // Cache & Render Tables
-                b2bDataCache = data.b2b || [];
-                renderOverviewB2B(data.b2b);
-                renderB2BTable(data.b2b);
-                renderB2CTable(data.b2c);
                 renderMasterTable(data.master);
                 renderSentTable(data.sent_log);
-                renderAuditTable(data.activities);
 
             } catch (err) {
                 console.error("Dashboard data load error:", err);
@@ -906,7 +1053,7 @@
                     labels: ['B2B Wholesale', 'B2C Individual'],
                     datasets: [{
                         data: [b2b || 0, b2c || 0],
-                        backgroundColor: ['#3b82f6', '#c084fc'],
+                        backgroundColor: ['#de7a63', '#c768a0'],
                         borderColor: '#111a2e',
                         borderWidth: 3
                     }]
@@ -930,7 +1077,7 @@
                     datasets: [{
                         label: 'Export Buyer Prospects',
                         data: Object.values(countries || {}),
-                        backgroundColor: '#6366f1',
+                        backgroundColor: '#c76882',
                         borderRadius: 6
                     }]
                 },
@@ -954,7 +1101,7 @@
                     labels: Object.keys(sources || {}),
                     datasets: [{
                         data: Object.values(sources || {}),
-                        backgroundColor: ['#10b981', '#0ea5e9', '#f59e0b', '#8b5cf6', '#f43f5e'],
+                        backgroundColor: ['#d87562', '#c768a0', '#edaa62', '#9b79bd', '#e58a9c'],
                         borderColor: '#111a2e',
                         borderWidth: 3
                     }]
@@ -983,6 +1130,7 @@
                         <td style="font-weight: 700; color: #fff;">${b.buyer_name || 'N/A'}</td>
                         <td style="color: #93c5fd; font-weight: 600;">${b.company_name || 'N/A'}</td>
                         <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #34d399;">${b.email}</span></td>
+                        <td><a href="mailto:${b.email || ''}" style="color: #fbbf24; text-decoration: underline;">Send Mail</a></td>
                         <td>${b.country || 'Global'}</td>
                         <td style="font-size: 12px; color: var(--text-muted); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${b.classification_reason || 'Wholesale entity'}</td>
                     </tr>
@@ -1004,6 +1152,7 @@
                         <td style="font-weight: 700; color: #fff;">${b.buyer_name || 'N/A'}</td>
                         <td style="color: #93c5fd; font-weight: 600;">${b.company_name || 'N/A'}</td>
                         <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #34d399;">${b.email}</span></td>
+                        <td><a href="mailto:${b.email || ''}" style="color: #fbbf24; text-decoration: underline;">Send Mail</a></td>
                         <td>${b.website ? `<a href="${b.website}" target="_blank" style="color: #60a5fa; text-decoration: underline;">Link</a>` : '—'}</td>
                         <td>${b.country || 'Global'}</td>
                         <td style="font-size: 12px; color: var(--text-muted);">${b.classification_reason || 'Corporate Wholesale Entity'}</td>
@@ -1053,10 +1202,11 @@
             }
             tbody.innerHTML = masterList.map(b => `
                 <tr>
-                    <td style="font-weight: 700; color: #fff;">${b.buyer_name || 'N/A'}</td>
-                    <td style="color: #cbd5e1;">${b.company_name || 'Individual'}</td>
-                    <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #34d399;">${b.email}</span></td>
-                    <td>${b.website ? `<a href="${b.website}" target="_blank" style="color: #60a5fa; text-decoration: underline;">Link</a>` : '—'}</td>
+                    <td style="font-weight: 700; color: #392d33;">${b.buyer_name || 'N/A'}</td>
+                    <td style="color: #51434a;">${b.company_name || 'Individual'}</td>
+                    <td><span class="email-link">${b.email || '—'}</span></td>
+                    <td>${b.email ? `<button type="button" class="btn btn-primary" data-email="${encodeEmailData(b.email)}" data-buyer-name="${encodeEmailData(b.buyer_name)}" data-company-name="${encodeEmailData(b.company_name)}" onclick="sendGeneratedEmail(this)">✉ Send Email</button>` : '—'}</td>
+                    <td>${b.website ? `<a href="${b.website}" target="_blank" rel="noopener" style="color: #a34d72; text-decoration: underline;">Website</a>` : '—'}</td>
                     <td>${b.country || 'Global'}</td>
                     <td><span class="tag tag-info">${b.source_platform || 'Web'}</span></td>
                 </tr>
@@ -1066,16 +1216,25 @@
         function renderSentTable(sentList) {
             const tbody = document.getElementById("sent-full-tbody");
             if (!sentList || sentList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-faint); padding: 20px;">No outreach records yet. Use 'Simulate Outreach' to send.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No sent email records yet.</td></tr>`;
                 return;
             }
-            tbody.innerHTML = sentList.map(s => `
-                <tr>
-                    <td style="font-family: 'JetBrains Mono', monospace; color: #fff;">${s.email}</td>
-                    <td><span class="tag tag-success">DISPATCHED (${s.status})</span></td>
-                    <td style="color: var(--text-faint); font-size: 12px;">${s.sent_date || 'Today'}</td>
-                </tr>
-            `).join("");
+            tbody.innerHTML = sentList.map(s => {
+                const statusLabel = s.status === "SUCCESS" ? "Sent"
+                    : s.status === "SIMULATED_SUCCESS" ? "Simulation"
+                    : s.status === "FAILED" ? "Failed"
+                    : s.status;
+                const statusClass = s.status === "SUCCESS" ? "tag-success"
+                    : s.status === "FAILED" ? "tag-danger"
+                    : "tag-warning";
+                return `
+                    <tr>
+                        <td style="font-family: 'JetBrains Mono', monospace; color: #51434a;">${s.email}</td>
+                        <td><span class="tag ${statusClass}">${statusLabel}</span></td>
+                        <td style="color: var(--text-faint); font-size: 12px;">${s.sent_date || 'Today'}</td>
+                    </tr>
+                `;
+            }).join("");
         }
 
         function renderAuditTable(activityList) {

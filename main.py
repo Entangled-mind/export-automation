@@ -70,6 +70,7 @@ from outreach import (
     send_batch_outreach,
 )
 from search import discover_all_leads
+from seed_real_world_data import ensure_real_data_loaded
 from validation.data_quality import (
     STATUS_DUPLICATE,
     STATUS_INCOMPLETE,
@@ -119,6 +120,20 @@ def parse_args(args: Optional[List[str]] = None) -> argparse.Namespace:
     )
 
     parser.add_argument(
+        "--product",
+        "-p",
+        type=str,
+        default=None,
+        help="Dynamic target product/keyword to discover B2B buyer leads for (e.g. 'Yoga Mats', 'Organic Tea', 'Singing Bowls').",
+    )
+    parser.add_argument(
+        "--country",
+        "-c",
+        type=str,
+        default=None,
+        help="Optional target country filter for dynamic lead discovery (e.g. 'USA', 'Germany', 'UK').",
+    )
+    parser.add_argument(
         "--query",
         "-q",
         type=str,
@@ -158,6 +173,8 @@ def run_pipeline(
     test_mode: Optional[bool] = None,
     dry_run: Optional[bool] = None,
     query: Optional[str] = None,
+    product: Optional[str] = None,
+    country: Optional[str] = None,
     limit: int = 15,
     skip_discovery: bool = False,
     target_tiers: Optional[List[str]] = None,
@@ -169,6 +186,8 @@ def run_pipeline(
         test_mode: Override config.TEST_MODE if provided.
         dry_run: Override config.DRY_RUN if provided.
         query: Override config.SEARCH_KEYWORD if provided.
+        product: Dynamic target product keyword.
+        country: Optional target country filter.
         limit: Max leads to fetch per discovery adapter.
         skip_discovery: If True, skips discovery and evaluates existing database leads.
         target_tiers: List of priority tiers to include in outreach. Defaults to [TIER_1, TIER_2].
@@ -177,9 +196,10 @@ def run_pipeline(
     Returns:
         Tuple of (DiscoveryStatistics, ClassificationStatistics, OutreachStatistics, DatabaseStatsDict).
     """
+    effective_product = product or query or config.SEARCH_KEYWORD
+    effective_query = effective_product
     effective_test_mode = config.TEST_MODE if test_mode is None else test_mode
     effective_dry_run = config.DRY_RUN if dry_run is None else dry_run
-    effective_query = config.SEARCH_KEYWORD if query is None else query
     if target_tiers is None:
         target_tiers = [TIER_1, TIER_2]
 
@@ -202,6 +222,7 @@ def run_pipeline(
     # STEP 0: DATABASE INITIALIZATION & CSV MIGRATION
     # --------------------------------------------------------------------------
     init_database()
+    ensure_real_data_loaded()
     init_buyers_csv()
     init_sent_log()
     init_activity_log()
@@ -460,6 +481,8 @@ def main() -> None:
         test_mode=args.test_mode,
         dry_run=args.dry_run,
         query=args.query,
+        product=args.product,
+        country=args.country,
         limit=args.limit,
         skip_discovery=args.no_discovery,
         target_tiers=target_tiers,

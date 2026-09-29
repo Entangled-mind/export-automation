@@ -10,6 +10,7 @@ Handles:
 
 from dataclasses import asdict, dataclass
 from datetime import datetime
+from html import escape as html_escape
 from email import utils
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -154,6 +155,9 @@ def send_single_email(
     test_mode: Optional[bool] = None,
     sent_log_path: Optional[Path] = None,
     activity_log_path: Optional[Path] = None,
+    subject_override: Optional[str] = None,
+    body_text_override: Optional[str] = None,
+    sender_name: Optional[str] = None,
 ) -> OutreachResult:
     """Evaluate and dispatch an outreach email to a single buyer.
 
@@ -228,6 +232,16 @@ def send_single_email(
 
     # 4. Render personalized draft
     draft = render_email_draft(buyer)
+    if subject_override is not None:
+        draft.subject = subject_override
+    if body_text_override is not None:
+        draft.body_text = body_text_override
+        paragraphs = "".join(
+            f"<p>{html_escape(part)}</p>"
+            for part in body_text_override.split("\n\n")
+            if part.strip()
+        )
+        draft.body_html = f"<html><body>{paragraphs}</body></html>"
 
     # 5. Determine whether to run in Simulation / Dry-Run Mode
     is_test = config.TEST_MODE if test_mode is None else test_mode
@@ -237,7 +251,7 @@ def send_single_email(
     run_simulation = is_test or is_dry or not has_credentials
 
     # Build MIME message to verify integrity in all modes
-    mime_msg = build_mime_message(draft)
+    mime_msg = build_mime_message(draft, sender_name=sender_name)
 
     if run_simulation:
         # SIMULATION / DRY-RUN MODE: Zero network calls, zero spam
@@ -285,18 +299,26 @@ def send_single_email(
             timestamp=now_ts,
         )
     except Exception as e:
+        error_text = str(e)
+        if getattr(e, "winerror", None) == 10013 or "WinError 10013" in error_text:
+            failure_message = (
+                "Windows blocked this app's SMTP connection (WinError 10013). "
+                "The email was not sent; open the prepared email in your mail app to send it."
+            )
+        else:
+            failure_message = f"SMTP transmission failure: {error_text}"
         log_sent_entry(email, "FAILED", sent_log_path)
         log_activity(
             event="OUTREACH_FAILED",
             email=email,
             status="FAILED",
-            message=f"SMTP transmission error: {str(e)}",
+            message=failure_message,
             csv_path=activity_log_path,
         )
         return OutreachResult(
             email=email,
             status="FAILED",
-            message=f"SMTP transmission failure: {str(e)}",
+            message=failure_message,
             subject=draft.subject,
             timestamp=now_ts,
         )

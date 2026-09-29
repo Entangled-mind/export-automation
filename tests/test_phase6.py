@@ -81,7 +81,7 @@ class TestDashboardServerAndApi(unittest.TestCase):
             self.assertEqual(resp.status, 200)
             self.assertIn("text/html", resp.headers.get("Content-Type", ""))
             content = resp.read().decode("utf-8")
-            self.assertIn("EXPORT Automation System", content)
+            self.assertIn("ResonaCraft | Find Buyers", content)
 
     def test_get_api_data(self):
         """GET /api/data should return JSON with master, b2b, b2c, and stats."""

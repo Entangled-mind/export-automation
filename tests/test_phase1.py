@@ -37,7 +37,7 @@ class TestEmailNormalization(unittest.TestCase):
     """Tests for normalizing email strings."""
 
     def test_whitespace_and_lowercase(self):
-        """Should trim leading/trailing spaces and convert to lowercase."""
+        """Should trim spaces, lowercase addresses, and preserve their real domains."""
         self.assertEqual(
             normalize_email("   John@Example.COM   "), "john@example.com"
         )

@@ -28,6 +28,113 @@ STATUS_DUPLICATE = config.STATUS_DUPLICATE
 STATUS_REJECTED = config.STATUS_REJECTED
 
 
+def _is_generic_company_domain(domain: str) -> bool:
+    """Return True for obvious placeholder or generic business-brand domains."""
+    if not domain:
+        return False
+
+    clean = domain.strip().lower().replace("www.", "")
+    clean = clean.split("/", 1)[0].split(":", 1)[0]
+    clean = clean.rstrip(".")
+
+    if not clean or "." not in clean:
+        return False
+
+    root_label = clean.split(".", 1)[0]
+    generic_labels = {
+        "company",
+        "companies",
+        "business",
+        "businesses",
+        "group",
+        "groups",
+        "trading",
+        "trade",
+        "commerce",
+        "enterprise",
+        "enterprises",
+        "industries",
+        "industry",
+        "solutions",
+        "services",
+        "partners",
+        "consulting",
+        "logistics",
+        "global",
+        "international",
+        "holdings",
+        "suppliers",
+        "marketing",
+        "technology",
+        "resources",
+    }
+
+    if root_label in generic_labels:
+        return True
+
+    # Also reject domains like company.com or business.com even when they have a valid TLD.
+    if root_label in {"company", "business"}:
+        return True
+
+    return False
+
+
+def _company_domain_looks_verified(email: str, website: str) -> bool:
+    """Return True only for business-like domains that match a real company presence."""
+    if not email or not website:
+        return False
+
+    email_lower = email.strip().lower()
+    website_lower = website.strip().lower()
+
+    if "@" not in email_lower:
+        return False
+
+    email_domain = email_lower.split("@", 1)[1]
+    if not email_domain:
+        return False
+
+    # Reject free-email and generic providers used for personal inboxes rather than business domains.
+    generic_domains = {
+        "gmail.com", "googlemail.com", "yahoo.com", "hotmail.com", "outlook.com",
+        "icloud.com", "protonmail.com", "aol.com", "mail.com", "gmx.com",
+        "ymail.com", "live.com", "msn.com", "zoho.com"
+    }
+    if email_domain in generic_domains:
+        return False
+
+    # Reject obvious placeholder or example domains.
+    if any(token in email_domain for token in ("example.", "test.", "sample.", "domain.", "placeholder.")):
+        return False
+
+    # Require the website to look like a real company domain, not a generic placeholder or fake TLD.
+    parsed = website_lower.strip("/")
+    parsed = parsed.replace("http://", "").replace("https://", "")
+    if parsed.startswith("www."):
+        parsed = parsed[4:]
+    if any(parsed.endswith(suffix) for suffix in (".example", ".test", ".local", ".invalid")):
+        return False
+
+    # Reject clearly non-company URLs (single-word placeholder domains without business identifiers)
+    root = parsed.split("/", 1)[0].split(":", 1)[0]
+    if root.count(".") < 1:
+        return False
+
+    if _is_generic_company_domain(root):
+        return False
+
+    # Require the website domain and email domain to be consistent with real-company verification.
+    website_domain = root.lower().split(".")
+    if len(website_domain) >= 2:
+        website_root = ".".join(website_domain[-2:])
+        if website_root == email_domain:
+            return True
+        if email_domain.endswith("." + website_root):
+            return True
+
+    return False
+
+
 def assess_lead_quality(
     lead: Dict[str, str],
     existing_buyers: Optional[List[Dict[str, str]]] = None,
@@ -41,7 +148,8 @@ def assess_lead_quality(
     4. Duplicate email in database -> DUPLICATE
     5. Duplicate company + website in database -> DUPLICATE
     6. Missing metadata (company, website, country, or source) -> INCOMPLETE
-    7. Fully compliant, verified lead -> VALID
+    7. Real-company verification required for business acceptance -> REJECTED
+    8. Fully compliant, verified lead -> VALID
 
     Args:
         lead: Raw or normalized buyer dictionary.
@@ -50,6 +158,7 @@ def assess_lead_quality(
     Returns:
         Tuple of (status: str, reason: str).
     """
+    raw_email = (lead.get("email") or "").strip()
     norm = normalize_buyer(lead)
     email = norm.get("email", "")
     company = norm.get("company_name", "")
@@ -58,16 +167,17 @@ def assess_lead_quality(
     source = norm.get("source_platform", "")
 
     # 1. Missing Email Check
-    if not email:
+    if not raw_email:
         return STATUS_REJECTED, "Missing email address."
 
     # 2. Placeholder / Test Email Check
-    if is_placeholder_email(email):
-        return STATUS_REJECTED, f"Placeholder or test email rejected: '{email}'."
+    candidate_email = email or raw_email
+    if is_placeholder_email(candidate_email):
+        return STATUS_REJECTED, f"Placeholder or test email rejected: '{candidate_email}'."
 
     # 3. Email Syntax Validation
-    if not is_valid_email(email):
-        return STATUS_INVALID_EMAIL, f"Invalid email format: '{email}'."
+    if not is_valid_email(candidate_email):
+        return STATUS_INVALID_EMAIL, f"Invalid email format: '{candidate_email}'."
 
     # 4. Duplicate Email Detection
     if existing_buyers is not None:
@@ -95,7 +205,14 @@ def assess_lead_quality(
         missing_str = ", ".join(missing)
         return STATUS_INCOMPLETE, f"Valid email, but missing metadata: [{missing_str}]."
 
-    # 7. Passed all quality criteria
+    # 7. Real-company verification gate
+    if not _company_domain_looks_verified(email, website):
+        return STATUS_REJECTED, (
+            "Real-company verification required: free-email or non-business domains are rejected "
+            "before a lead can be accepted as a verified company contact."
+        )
+
+    # 8. Passed all quality criteria
     return STATUS_VALID, "Lead passed all data-quality checks."
 
 

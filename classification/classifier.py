@@ -98,37 +98,38 @@ CORPORATE_SUFFIXES = {
     "supplies",
 }
 
-# Commercial studio, spa, sound healing & therapy indicators
+# General commercial buyer keywords that apply across product categories
 STUDIO_WELLNESS_KEYWORDS = {
-    "sound healing",
-    "sound bath",
-    "singing bowls",
-    "tibetan",
-    "meditation",
-    "yoga",
-    "wellness",
-    "spa",
-    "retreat",
-    "therapy",
-    "therapist",
-    "chakra",
-    "harmonic",
-    "gong",
-    "reiki",
-    "holistic",
-    "sanctuary",
-    "studio",
-    "studios",
-    "academy",
-    "center",
-    "centre",
-    "clinic",
+    "supplier",
+    "supplies",
+    "sourcing",
+    "exporter",
+    "importer",
+    "distributor",
+    "wholesaler",
+    "retailer",
+    "dealers",
+    "dealer",
+    "procurement",
+    "trade",
+    "trading",
+    "buyer",
+    "buyers",
     "shop",
     "store",
     "boutique",
-    "handicrafts",
-    "esoteric",
-    "spiritual",
+    "market",
+    "factory",
+    "manufacturing",
+    "products",
+    "goods",
+    "wellness",
+    "studio",
+    "academy",
+    "center",
+    "centre",
+    "solutions",
+    "partner",
 }
 
 # Negative / false positive indicators (unrelated industries)
@@ -154,6 +155,36 @@ IRRELEVANT_KEYWORDS = {
 
 # Consolidated for backward compatibility
 BUSINESS_KEYWORDS = WHOLESALE_KEYWORDS | STUDIO_WELLNESS_KEYWORDS | CORPORATE_SUFFIXES
+
+
+# ==============================================================================
+# PRODUCT CONTEXT INFERENCE
+# ==============================================================================
+def infer_product_context(buyer: Dict[str, str]) -> str:
+    """Infer a likely product when the buyer profile explicitly contains product evidence.
+
+    This is a compatibility aid for product-specific lead data and should not be used as a
+    global default. It only triggers on explicit product evidence inside the buyer record.
+    """
+    text = " ".join(
+        [
+            buyer.get("product") or "",
+            buyer.get("product_interest") or "",
+            buyer.get("company_name") or "",
+            buyer.get("website") or "",
+            buyer.get("email") or "",
+            buyer.get("buyer_name") or "",
+        ]
+    ).lower()
+
+    if any(token in text for token in ["singing bowl", "singing bowls", "singingbowls", "meditation bowl", "tibetan bowl", "chakra bowl"]):
+        return "Singing Bowls"
+    if any(token in text for token in ["organic coffee", "coffee beans", "coffee supplier", "specialty coffee"]):
+        return "Organic Coffee"
+    if any(token in text for token in ["water pump", "industrial pump", "pump supplier", "pump distributor"]):
+        return "Industrial Water Pumps"
+    explicit = str(buyer.get("product") or buyer.get("product_interest") or "").strip()
+    return explicit or "the requested product"
 
 
 # ==============================================================================
@@ -231,17 +262,14 @@ class ClassificationStatistics:
 # PROMPT ENGINEERING & JSON PARSING
 # ==============================================================================
 def build_classification_prompt(buyer: Dict[str, str]) -> str:
-    """Construct a specialized prompt evaluating buyer fit for Singing Bowls export.
+    """Construct a generic prompt evaluating buyer fit for a user-specified product.
 
-    Args:
-        buyer: Normalized buyer dictionary.
-
-    Returns:
-        Structured text prompt for Google Gemini AI.
+    The product is dynamic and should not be hardcoded for any single category.
     """
-    return f"""You are a senior B2B international trade analyst specializing in Himalayan acoustic sound healing instruments (Tibetan Singing Bowls, 7-Chakra sets, meditation gongs, bronze healing bells, and accessories).
+    product_name = infer_product_context(buyer)
+    return f"""You are a senior B2B sourcing and trade analyst evaluating a cross-border buyer opportunity for {product_name}.
 
-Analyze the prospective international buyer lead below and classify their commercial viability.
+Assess the prospective lead below using only the supplied evidence. Do not invent facts.
 
 Prospective Buyer Profile:
 - Contact Name: {buyer.get('buyer_name', 'Unknown')}
@@ -249,22 +277,23 @@ Prospective Buyer Profile:
 - Email: {buyer.get('email', '')}
 - Website: {buyer.get('website', 'None listed')}
 - Country: {buyer.get('country', 'Unknown')}
+- Product Interest: {product_name}
 - Discovery Channel: {buyer.get('source_platform', 'Unknown')}
 
 Your tasks:
 1. Determine the broad category:
-   - "BUSINESS" (B2B: wholesaler, distributor, sound studio, yoga center, spa, wellness retailer)
-   - "INDIVIDUAL" (B2C: solo practitioner, teacher, retail customer, hobbyist)
+   - "BUSINESS" (B2B importer, distributor, wholesaler, manufacturer, retailer, source, trading company)
+   - "INDIVIDUAL" (solo buyer, consumer, small independent buyer)
    - "IRRELEVANT" (unrelated industry, spam, false positive)
 
 2. Assign a Priority Tier:
-   - "Tier 1 - High Priority" (High-volume wholesale importers, distributors, chain studios)
-   - "Tier 2 - Medium Priority" (Independent studios, spas, sound therapists, specialty shops)
-   - "Tier 3 - Low Priority" (Individual buyers, solo hobbyists)
-   - "Irrelevant / Unqualified" (Irrelevant industries, spam)
+   - "Tier 1 - High Priority" (commercial buyer with clear import/distribution or bulk sourcing intent)
+   - "Tier 2 - Medium Priority" (commercial buyer with moderate evidence or regional retail interest)
+   - "Tier 3 - Low Priority" (limited evidence, small or individual buyer)
+   - "Irrelevant / Unqualified" (irrelevant or weak lead)
 
-3. Compute an Intent Score from 0 to 100 based on B2B purchase volume potential for singing bowls.
-4. Recommend a tailored outreach angle / product pitch (under 20 words).
+3. Compute an Intent Score from 0 to 100 based on purchase potential and product fit.
+4. Recommend a tailored outreach angle / pitch (under 20 words).
 5. State a concise reasoning (under 25 words).
 
 Respond ONLY with valid JSON in this exact structure:
@@ -325,23 +354,20 @@ def parse_gemini_json(raw_text: str) -> Optional[Dict[str, Any]]:
 # HEURISTIC & MOCK CLASSIFIERS
 # ==============================================================================
 def heuristic_classify_lead(buyer: Dict[str, str]) -> LeadClassification:
-    """Classify lead using expert domain heuristics for Singing Bowls export.
+    """Classify lead using product-generic trade heuristics.
 
-    Args:
-        buyer: Normalized buyer dictionary.
-
-    Returns:
-        LeadClassification object.
+    The logic is based on company evidence, buyer intent signals, and email/domain patterns
+    rather than any single product category.
     """
     company = (buyer.get("company_name") or "").strip().lower()
     email = (buyer.get("email") or "").strip().lower()
     website = (buyer.get("website") or "").strip().lower()
+    product_name = infer_product_context(buyer)
 
     email_domain = email.split("@")[-1] if "@" in email else ""
     is_freemail = email_domain in FREEMAIL_DOMAINS
 
-    # 1. Check for negative / irrelevant keywords
-    all_text = f"{company} {email_domain} {website}".lower()
+    all_text = f"{company} {email_domain} {website} {product_name}".lower()
     for irr in IRRELEVANT_KEYWORDS:
         if irr in all_text:
             return LeadClassification(
@@ -354,67 +380,82 @@ def heuristic_classify_lead(buyer: Dict[str, str]) -> LeadClassification:
                 source="Heuristic",
             )
 
-    # 2. Check for Wholesale / Importer / Distributor (Tier 1)
     matched_wholesale = [
         kw for kw in WHOLESALE_KEYWORDS
         if re.search(r"\b" + re.escape(kw) + r"\b", company)
     ]
     if company and matched_wholesale:
+        if "singing bowls".lower() in product_name.lower() or "himalayan" in company or "singing bowls" in all_text:
+            outreach_angle = "Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing."
+        else:
+            outreach_angle = f"Direct sourcing outreach for {product_name} with wholesale pricing and import-ready terms."
         return LeadClassification(
             category=CATEGORY_BUSINESS,
             tier=TIER_1,
             intent_score=94,
             confidence=0.95,
-            outreach_angle="Direct Himalayan Export: Artisan Hand-Hammered 7-Metals Singing Bowls with Wholesale Volume Pricing.",
-            reasoning=f"High-volume wholesale importer/distributor indicators: {', '.join(matched_wholesale[:2])}.",
+            outreach_angle=outreach_angle,
+            reasoning=f"High-volume trade indicators: {', '.join(matched_wholesale[:2])}.",
             source="Heuristic",
         )
 
-    # 3. Check for dedicated corporate wholesale domain
-    if not is_freemail and email_domain and ("wholesale" in email_domain or "impex" in email_domain or "distributor" in email_domain):
+    if not is_freemail and email_domain and any(token in email_domain for token in ["wholesale", "import", "trading", "export", "supply", "distribution", "dealer"]):
+        if "singing bowls".lower() in product_name.lower() or "himalayan" in company or "singing bowls" in all_text:
+            outreach_angle = "Wholesale Master-Grade Singing Bowls and Gongs with Custom Etching for Corporate Importers."
+        else:
+            outreach_angle = f"Commercial sourcing outreach for {product_name} with volume negotiation support."
         return LeadClassification(
             category=CATEGORY_BUSINESS,
             tier=TIER_1,
-            intent_score=92,
+            intent_score=90,
             confidence=0.92,
-            outreach_angle="Wholesale Master-Grade Singing Bowls and Gongs with Custom Etching for Corporate Importers.",
-            reasoning=f"Commercial wholesale domain (@{email_domain}).",
+            outreach_angle=outreach_angle,
+            reasoning=f"Corporate trade domain (@{email_domain}).",
             source="Heuristic",
         )
 
-    # 4. Check for Studio / Wellness / Spa / Meditation (Tier 2)
-    matched_wellness = [kw for kw in STUDIO_WELLNESS_KEYWORDS if kw in company or kw in website]
+    matched_trade = [kw for kw in STUDIO_WELLNESS_KEYWORDS if kw in company or kw in website]
     matched_corp = [kw for kw in CORPORATE_SUFFIXES if kw in company]
-    if company and (matched_wellness or matched_corp or not is_freemail):
+    if company and (matched_trade or matched_corp or not is_freemail):
+        if (
+            "singing bowls" in all_text
+            or "singingbowls" in all_text
+            or "7-chakra" in company
+            or "chakra" in all_text
+            or "sound healing" in all_text
+            or "spa" in all_text
+            or "wellness" in all_text
+        ):
+            outreach_angle = "Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions."
+        else:
+            outreach_angle = f"B2B product inquiry for {product_name} with regional sales support."
         return LeadClassification(
             category=CATEGORY_BUSINESS,
             tier=TIER_2,
-            intent_score=80,
-            confidence=0.88,
-            outreach_angle="Master-Grade 7-Chakra Tuned Singing Bowl Sets tailored for sound baths and therapy sessions.",
-            reasoning=f"Active studio/spa commercial entity ('{buyer.get('company_name')}').",
+            intent_score=78,
+            confidence=0.87,
+            outreach_angle=outreach_angle,
+            reasoning=f"Commercial entity with trade signals and business presence ('{buyer.get('company_name')}').",
             source="Heuristic",
         )
 
-    # 5. Check for Individual / Solo Practitioner (Tier 3)
     if is_freemail or not company:
         return LeadClassification(
             category=CATEGORY_INDIVIDUAL,
             tier=TIER_3,
-            intent_score=45,
-            confidence=0.82,
-            outreach_angle="Handcrafted Himalayan Singing Bowl Starter Kits with Felt Mallet & Brocade Cushion for Personal Practice.",
-            reasoning=f"Individual practitioner or consumer profile operating via personal email (@{email_domain or 'consumer'}).",
+            intent_score=42,
+            confidence=0.8,
+            outreach_angle=f"Entry-level product inquiry for {product_name or 'the requested product'}.",
+            reasoning=f"Consumer or small buyer profile via personal email (@{email_domain or 'consumer'}).",
             source="Heuristic",
         )
 
-    # Fallback default
     return LeadClassification(
         category=CATEGORY_INDIVIDUAL,
         tier=TIER_3,
         intent_score=50,
-        confidence=0.70,
-        outreach_angle="Himalayan Singing Bowls & Acoustic Accessories Catalog.",
+        confidence=0.7,
+        outreach_angle=f"General product inquiry for {product_name or 'the requested product'}.",
         reasoning="Sparse commercial details; defaulted to entry-tier inquiry.",
         source="Heuristic",
     )

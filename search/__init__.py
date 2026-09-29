@@ -21,6 +21,17 @@ from typing import Dict, List, Optional
 import config
 from search.directory_search import parse_directory_html, search_directory
 from search.google_search import search_google
+from search.lead_pipeline import run_discovery_pipeline
+from search.query_generator import generate_buyer_queries
+from search.search_api import (
+    ConfigurationRequiredError,
+    SearchAPIAdapter,
+    search_web,
+)
+from search.website_extractor import (
+    check_lead_relevance,
+    extract_business_info,
+)
 from search.website_search import (
     extract_contacts_from_html,
     extract_emails_from_text,
@@ -66,3 +77,21 @@ def discover_all_leads(
     discovered.extend(web_leads)
 
     return discovered[:limit]
+
+
+__all__ = [
+    "search_google",
+    "search_directory",
+    "parse_directory_html",
+    "search_website",
+    "extract_contacts_from_html",
+    "extract_emails_from_text",
+    "discover_all_leads",
+    "generate_buyer_queries",
+    "search_web",
+    "SearchAPIAdapter",
+    "ConfigurationRequiredError",
+    "extract_business_info",
+    "check_lead_relevance",
+    "run_discovery_pipeline",
+]

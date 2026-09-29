@@ -38,17 +38,29 @@ CLASSIFIED_FIELDS = [
 
 
 def normalize_email(email: Optional[str]) -> str:
-    """Normalize an email address by trimming whitespace and converting to lowercase.
+    """Normalize an email address by trimming whitespace and lowercasing it.
 
     Args:
         email: Raw email string or None.
 
     Returns:
-        Cleaned lowercase email string, or empty string if input is invalid.
+        Cleaned lowercase email address, or empty string if input is invalid.
     """
     if not email or not isinstance(email, str):
         return ""
-    return email.strip().lower()
+
+    cleaned = email.strip().lower()
+    if not cleaned:
+        return ""
+
+    if "@" not in cleaned:
+        return ""
+
+    local_part, domain_part = cleaned.rsplit("@", 1)
+    if not local_part or not domain_part:
+        return ""
+
+    return f"{local_part}@{domain_part.lower()}"
 
 
 def normalize_buyer(raw_data: Optional[Dict[str, str]]) -> Dict[str, str]:

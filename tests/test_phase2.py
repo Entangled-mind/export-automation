@@ -223,6 +223,34 @@ class TestDataQualityAssessment(unittest.TestCase):
         status, reason = assess_lead_quality(lead, self.existing_buyers)
         self.assertEqual(status, STATUS_REJECTED)
 
+    def test_status_rejected_unverified_company_domain(self):
+        """Generic free-mail addresses and non-company domains should be rejected as unverified."""
+        lead = {
+            "buyer_name": "Generic Buyer",
+            "company_name": "Acme Trading Company",
+            "email": "hello@gmail.com",
+            "website": "https://acme-trading.example",
+            "country": "USA",
+            "source_platform": "Web",
+        }
+        status, reason = assess_lead_quality(lead, self.existing_buyers)
+        self.assertEqual(status, STATUS_REJECTED)
+        self.assertIn("real-company verification", reason.lower())
+
+    def test_status_rejected_generic_business_domain(self):
+        """A generic company domain should be rejected even if it has valid syntax."""
+        lead = {
+            "buyer_name": "Generic Buyer",
+            "company_name": "Company Group",
+            "email": "hello@company.com",
+            "website": "https://company.com",
+            "country": "USA",
+            "source_platform": "Web",
+        }
+        status, reason = assess_lead_quality(lead, self.existing_buyers)
+        self.assertEqual(status, STATUS_REJECTED)
+        self.assertIn("real-company verification", reason.lower())
+
     def test_status_duplicate_email(self):
         """Email already in existing database should return STATUS_DUPLICATE."""
         duplicate_lead = {

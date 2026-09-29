@@ -6,6 +6,7 @@ CAPTCHAs, rate limits, or anti-bot protections.
 
 from typing import Dict, List, Optional
 import config
+from search.search_api import SearchAPIAdapter
 
 # Curated test fixtures representing realistic Google search results
 # for Singing Bowls wholesale importers and distributors
@@ -80,38 +81,16 @@ def search_google(
             results.append(dict(lead))
         return results
 
-    # Live Mode: Polite HTTP request to public search endpoint
-    # Note: Respects robots, anti-bot mechanisms, and avoids aggressive scraping
-    leads: List[Dict[str, str]] = []
-    try:
-        import requests
-        from bs4 import BeautifulSoup
-
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    # Live mode uses official, credentialed search APIs only.
+    listings = SearchAPIAdapter().search_web(query=query, max_results=limit, test_mode=False)
+    return [
+        {
+            "buyer_name": "",
+            "company_name": (item.get("title") or "").strip(),
+            "email": "",
+            "website": (item.get("url") or "").strip(),
+            "country": "",
+            "source_platform": "Configured Search API",
         }
-        search_url = f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}"
-        resp = requests.get(search_url, headers=headers, timeout=6)
-
-        if resp.status_code == 200:
-            soup = BeautifulSoup(resp.text, "html.parser")
-            snippets = soup.select(".result__snippet")
-            titles = soup.select(".result__title")
-
-            for i in range(min(len(titles), limit)):
-                title_text = titles[i].get_text(strip=True) if i < len(titles) else ""
-                snippet_text = snippets[i].get_text(strip=True) if i < len(snippets) else ""
-
-                leads.append({
-                    "buyer_name": "",
-                    "company_name": title_text[:50],
-                    "email": "",
-                    "website": "",
-                    "country": "",
-                    "source_platform": "Google Search",
-                })
-    except Exception:
-        # Fall back safely on error without crashing the pipeline
-        pass
-
-    return leads
+        for item in listings
+    ]

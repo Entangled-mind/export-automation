@@ -9,6 +9,7 @@ Provides both Plain Text and HTML MIME templates with robust placeholder fallbac
 """
 
 from dataclasses import dataclass
+from html import escape
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -362,8 +363,26 @@ def render_email_draft(
     else:
         content = render_tier2_content(placeholders)
 
-    # Resolve PDF attachment
-    final_attachment = attachment_path if attachment_path is not None else config.PRESENTATION_PATH
+    # Use a product-neutral message for decorative goods and other custom products.
+    # The singing-bowl catalog and legacy specialist copy only apply to that product.
+    is_singing_bowls = "singing bowl" in (buyer.get("product") or "").lower()
+    product_name = (buyer.get("product") or config.SEARCH_KEYWORD).strip()
+    if product_name and not is_singing_bowls:
+        greeting = to_name or (f"the team at {company_name}" if company_name else "Purchasing Team")
+        subject = f"Wholesale inquiry: {product_name}" + (f" for {company_name}" if company_name else "")
+        body_text = (
+            f"Dear {greeting},\n\n"
+            f"I?m reaching out from {config.SENDER_COMPANY} to introduce our {product_name} for your consideration.\n\n"
+            "If your team is reviewing suppliers in this category, I would be glad to share product specifications, "
+            "wholesale pricing, minimum order quantities, and lead times.\n\n"
+            "Would you be open to receiving more information?\n\n"
+            f"Best regards,\n{config.SENDER_NAME}\n{config.SENDER_COMPANY}\n{config.SENDER_CONTACT}"
+        )
+        paragraphs = "".join(f"<p>{escape(part)}</p>" for part in body_text.split("\n\n") if part)
+        content = {"subject": subject, "body_text": body_text, "body_html": f"<html><body>{paragraphs}</body></html>"}
+
+    # Attach a catalog only when its product matches the buyer's interest.
+    final_attachment = attachment_path if attachment_path is not None else (config.PRESENTATION_PATH if is_singing_bowls else None)
     if final_attachment and not Path(final_attachment).exists():
         final_attachment = None
 

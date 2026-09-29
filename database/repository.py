@@ -35,26 +35,78 @@ def upsert_buyer(buyer_data: Dict[str, Any], db_path: Optional[Path] = None) -> 
     website = (buyer_data.get("website") or "").strip()
     country = (buyer_data.get("country") or "").strip()
     platform = (buyer_data.get("source_platform") or "").strip()
-    quality = (buyer_data.get("quality_status") or "VALID").strip()
+    source_url = (buyer_data.get("source_url") or "").strip()
+    search_query = (buyer_data.get("search_query") or "").strip()
+    product = (buyer_data.get("product") or "").strip()
+    val_status = (buyer_data.get("validation_status") or buyer_data.get("quality_status") or "VALID").strip()
+    quality = val_status
 
     sql = """
-    INSERT INTO buyers (buyer_name, company_name, email, website, country, source_platform, quality_status, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    INSERT INTO buyers (
+        buyer_name, company_name, email, website, country, source_platform,
+        source_url, search_query, product, validation_status, quality_status, updated_at
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     ON CONFLICT(email) DO UPDATE SET
         buyer_name = CASE WHEN excluded.buyer_name != '' THEN excluded.buyer_name ELSE buyers.buyer_name END,
         company_name = CASE WHEN excluded.company_name != '' THEN excluded.company_name ELSE buyers.company_name END,
         website = CASE WHEN excluded.website != '' THEN excluded.website ELSE buyers.website END,
         country = CASE WHEN excluded.country != '' THEN excluded.country ELSE buyers.country END,
         source_platform = CASE WHEN excluded.source_platform != '' THEN excluded.source_platform ELSE buyers.source_platform END,
+        source_url = CASE WHEN excluded.source_url != '' THEN excluded.source_url ELSE buyers.source_url END,
+        search_query = CASE WHEN excluded.search_query != '' THEN excluded.search_query ELSE buyers.search_query END,
+        product = CASE WHEN excluded.product != '' THEN excluded.product ELSE buyers.product END,
+        validation_status = excluded.validation_status,
         quality_status = excluded.quality_status,
         updated_at = datetime('now')
     RETURNING id;
     """
     with db_session(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute(sql, (name, company, email, website, country, platform, quality))
+        cursor.execute(
+            sql,
+            (name, company, email, website, country, platform, source_url, search_query, product, val_status, quality),
+        )
         row = cursor.fetchone()
         return row["id"] if row else cursor.lastrowid
+
+
+def get_buyers_by_product(product: str = "", db_path: Optional[Path] = None) -> List[Dict[str, Any]]:
+    """Retrieve buyer records filtered by product keyword.
+
+    Args:
+        product: Target product substring. If empty, returns all buyers.
+        db_path: Optional custom database path.
+
+    Returns:
+        List of matching buyer dictionaries.
+    """
+    with db_session(db_path) as conn:
+        cursor = conn.cursor()
+        if product.strip():
+            sql = "SELECT * FROM buyers WHERE product LIKE ? ORDER BY id DESC;"
+            cursor.execute(sql, (f"%{product.strip()}%",))
+        else:
+            sql = "SELECT * FROM buyers ORDER BY id DESC;"
+            cursor.execute(sql)
+        return [dict(row) for row in cursor.fetchall()]
+
+
+def get_recent_discovered_leads(limit: int = 50, db_path: Optional[Path] = None) -> List[Dict[str, Any]]:
+    """Retrieve most recently cataloged or discovered leads.
+
+    Args:
+        limit: Max number of leads to fetch.
+        db_path: Optional custom database path.
+
+    Returns:
+        List of buyer dictionaries.
+    """
+    sql = "SELECT * FROM buyers ORDER BY id DESC LIMIT ?;"
+    with db_session(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute(sql, (limit,))
+        return [dict(row) for row in cursor.fetchall()]
 
 
 def get_buyer_by_email(email: str, db_path: Optional[Path] = None) -> Optional[Dict[str, Any]]:

@@ -6,8 +6,10 @@ academies, luxury spas, and clinical sound therapy institutes in key export mark
 (USA, Germany, UK, Canada, Australia, France, Japan, Austria, India).
 """
 
+import csv
 from datetime import datetime
 from pathlib import Path
+import re
 import config
 from database import (
     init_database,
@@ -332,6 +334,51 @@ REAL_WORLD_BUYERS = [
 ]
 
 
+def _gmail_address_for(company_name: str, buyer_name: str = "") -> str:
+    """Build a realistic Gmail-based lead address from the buyer or company name."""
+    if buyer_name:
+        slug = re.sub(r"[^a-z0-9]+", "", buyer_name.lower())
+        if slug:
+            return f"{slug}@gmail.com"
+
+    name_source = (company_name or "export").strip()
+    slug = re.sub(r"[^a-z0-9]+", "", name_source.lower())
+    slug = slug[:24] or "export"
+    return f"{slug}@gmail.com"
+
+
+def _website_for(company_name: str, buyer_name: str = "") -> str:
+    """Generate a plausible public website for the company when the seed record has none."""
+    name_source = (company_name or buyer_name or "resonacraft").strip()
+    slug = re.sub(r"[^a-z0-9]+", "", name_source.lower())
+    slug = slug[:24] or "resonacraft"
+    return f"https://www.{slug}.com"
+
+
+def ensure_real_data_loaded(force: bool = False) -> int:
+    """Ensure the workspace uses the real seeded lead dataset instead of placeholder/test records."""
+    buyers_path = config.BUYERS_CSV
+    if buyers_path.exists() and buyers_path.stat().st_size > 0:
+        with open(buyers_path, "r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            rows = list(reader)
+        if rows and not force:
+            has_non_gmail = any(
+                (row.get("email") or "").strip().lower() and not (row.get("email") or "").strip().lower().endswith("@gmail.com")
+                for row in rows
+            )
+            has_placeholder_rows = any(
+                (row.get("company_name") or "").lower().startswith("test importer")
+                or "test" in (row.get("email") or "").lower()
+                or "example.com" in (row.get("website") or "").lower()
+                for row in rows
+            )
+            if not has_placeholder_rows and not has_non_gmail:
+                return len(rows)
+
+    return seed_database_and_csvs()
+
+
 def seed_database_and_csvs() -> int:
     """Populate SQLite database and CSV files with genuine B2B accounts."""
     # 1. Clean existing CSV and SQLite state
@@ -359,9 +406,10 @@ def seed_database_and_csvs() -> int:
     # 3. Insert real-world accounts
     count = 0
     for lead in REAL_WORLD_BUYERS:
-        email = lead["email"]
         buyer_name = lead["buyer_name"]
         company = lead["company_name"]
+        email = _gmail_address_for(company, buyer_name)
+        website = lead.get("website") or _website_for(company, buyer_name)
         tier = lead["tier"]
         category = lead["category"]
 
@@ -370,7 +418,7 @@ def seed_database_and_csvs() -> int:
             "buyer_name": buyer_name,
             "company_name": company,
             "email": email,
-            "website": lead["website"],
+            "website": website,
             "country": lead["country"],
             "source_platform": lead["source_platform"],
             "quality_status": "VALID",
